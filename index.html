@@ -1,345 +1,178 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orchegentra AI</title>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
 <style>
 body {
-  background: #0b1020;
-  color: white;
-  font-family: Arial, sans-serif;
-  padding: 20px;
-  margin: 0;
+  margin:0;
+  font-family: Arial;
+  background:#0b1020;
+  color:white;
 }
+
+.header {
+  padding:15px;
+  background:#141b34;
+  text-align:center;
+  font-weight:bold;
+  font-size:18px;
+}
+
+.container {
+  padding:15px;
+}
+
 .card {
-  background: #141b34;
-  padding: 16px;
-  border-radius: 16px;
-  margin-bottom: 16px;
+  background:#141b34;
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:15px;
 }
+
 input, textarea, button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: none;
-  box-sizing: border-box;
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:8px;
+  border:none;
+  box-sizing:border-box;
 }
-textarea {
-  min-height: 110px;
-  resize: vertical;
-}
+
 button {
-  background: #5a7cff;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
+  background:#5a7cff;
+  color:white;
+  font-weight:bold;
 }
+
 .task {
-  background: #0e1530;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 12px;
+  background:#0e1530;
+  padding:10px;
+  border-radius:10px;
+  margin-top:10px;
 }
-.output {
-  white-space: pre-wrap;
-  background: #000;
-  padding: 10px;
-  border-radius: 10px;
-  margin-top: 10px;
-}
-#status {
-  margin-top: 12px;
-  padding: 10px;
-  background: #0e1530;
-  border-radius: 10px;
-  white-space: pre-wrap;
+
+.status {
+  font-size:12px;
+  color:#aaa;
+  margin-top:5px;
 }
 </style>
 </head>
 
 <body>
 
+<div class="header">
+ORCHEGENTRA AI — DASHBOARD
+</div>
+
+<div class="container">
+
 <div class="card">
-  <h2>Login / Signup</h2>
-
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-
-  <button type="button" id="signupBtn">Signup</button>
-  <button type="button" id="loginBtn">Login</button>
-  <button type="button" id="logoutBtn">Logout</button>
-
-  <div id="status">Ready</div>
+<h3>Login (Temporary)</h3>
+<button onclick="login()">Paste Token</button>
+<div id="loginStatus" class="status">Not logged in</div>
 </div>
 
 <div class="card">
-  <h2>Create Task</h2>
-
-  <input id="title" placeholder="Title">
-  <textarea id="desc" placeholder="Description"></textarea>
-
-  <button type="button" id="createTaskBtn">Create Task</button>
+<h3>Create Task</h3>
+<input id="title" placeholder="Task Title">
+<textarea id="desc" placeholder="Task Description"></textarea>
+<button onclick="createTask()">Create Task</button>
 </div>
 
 <div class="card">
-  <h2>Tasks</h2>
+<h3>Tasks</h3>
+<button onclick="loadTasks()">Refresh</button>
+<div id="tasks"></div>
+</div>
 
-  <button type="button" id="refreshBtn">Refresh</button>
-  <div id="tasks"></div>
 </div>
 
 <script>
-alert("JS Loaded");
+const BACKEND = "https://adventurous-art-production.up.railway.app";
+let token = "";
 
-var SUPABASE_URL = "https://etdbqqpmqfhzlsbvwm.supabase.co";
-var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0ZGJxcXBtcWZoemxzYnZ3bW51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxNDk4MzQsImV4cCI6MjA5MDcyNTgzNH0._u2OmAXIz65SZNLp-nfqbRYYFjZtYugXTYdRPeWG2BE";
-var BACKEND = "https://adventurous-art-production.up.railway.app";
-
-var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-function el(id) {
-  return document.getElementById(id);
-}
-
-function setStatus(msg) {
-  el("status").innerText = msg;
-}
-
-async function signup() {
-  try {
-    var email = el("email").value.trim();
-    var password = el("password").value;
-
-    if (!email || !password) {
-      alert("Enter email and password");
-      setStatus("Enter email and password");
-      return;
-    }
-
-    var result = await supabaseClient.auth.signUp({
-      email: email,
-      password: password
-    });
-
-    if (result.error) {
-      alert(result.error.message);
-      setStatus(result.error.message);
-      return;
-    }
-
-    alert("Signup success. Check email if confirmation is required.");
-    setStatus("Signup success. Check email if confirmation is required.");
-  } catch (e) {
-    alert(String(e));
-    setStatus(String(e));
+function login(){
+  const input = prompt("Paste your Bearer token here:");
+  if(input){
+    token = input;
+    document.getElementById("loginStatus").innerText = "Logged in";
   }
 }
 
-async function login() {
-  try {
-    var email = el("email").value.trim();
-    var password = el("password").value;
-
-    if (!email || !password) {
-      alert("Enter email and password");
-      setStatus("Enter email and password");
-      return;
-    }
-
-    var result = await supabaseClient.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
-
-    if (result.error) {
-      alert(result.error.message);
-      setStatus(result.error.message);
-      return;
-    }
-
-    alert("Login success");
-    setStatus("Login success");
-  } catch (e) {
-    alert(String(e));
-    setStatus(String(e));
+async function createTask(){
+  if(!token){
+    alert("Login first");
+    return;
   }
+
+  const res = await fetch(BACKEND+"/api/tasks/create",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":"Bearer "+token
+    },
+    body:JSON.stringify({
+      title: document.getElementById("title").value,
+      description: document.getElementById("desc").value
+    })
+  });
+
+  const data = await res.json();
+  alert(JSON.stringify(data));
 }
 
-async function logout() {
-  try {
-    await supabaseClient.auth.signOut();
-    alert("Logged out");
-    setStatus("Logged out");
-  } catch (e) {
-    alert(String(e));
-    setStatus(String(e));
+async function loadTasks(){
+  if(!token){
+    alert("Login first");
+    return;
   }
+
+  const res = await fetch(BACKEND+"/api/tasks",{
+    headers:{
+      "Authorization":"Bearer "+token
+    }
+  });
+
+  const data = await res.json();
+
+  const container = document.getElementById("tasks");
+  container.innerHTML = "";
+
+  (data.data || []).forEach(task => {
+    const div = document.createElement("div");
+    div.className = "task";
+
+    div.innerHTML = `
+      <b>${task.title}</b><br>
+      ${task.description}<br>
+      <div class="status">Status: ${task.status}</div>
+      <button onclick="executeTask('${task.id}')">Execute</button>
+      <div class="status">${task.final_output || ""}</div>
+    `;
+
+    container.appendChild(div);
+  });
 }
 
-async function getToken() {
-  var sessionData = await supabaseClient.auth.getSession();
-  if (sessionData && sessionData.data && sessionData.data.session && sessionData.data.session.access_token) {
-    return sessionData.data.session.access_token;
+async function executeTask(id){
+  if(!token){
+    alert("Login first");
+    return;
   }
-  return "";
+
+  await fetch(BACKEND+"/api/tasks/"+id+"/execute",{
+    method:"POST",
+    headers:{
+      "Authorization":"Bearer "+token
+    }
+  });
+
+  alert("Executed");
+  loadTasks();
 }
-
-async function createTask() {
-  try {
-    var token = await getToken();
-
-    if (!token) {
-      alert("Login first");
-      setStatus("Login first");
-      return;
-    }
-
-    var title = el("title").value.trim();
-    var description = el("desc").value.trim();
-
-    if (!title) {
-      alert("Enter task title");
-      return;
-    }
-
-    var res = await fetch(BACKEND + "/api/tasks/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
-      },
-      body: JSON.stringify({
-        title: title,
-        description: description
-      })
-    });
-
-    var data = await res.json();
-
-    if (!res.ok || !data.ok) {
-      alert(data.error || "Task create failed");
-      return;
-    }
-
-    alert("Task created");
-    setStatus("Task created: " + data.task.id);
-  } catch (e) {
-    alert(String(e));
-    setStatus(String(e));
-  }
-}
-
-async function loadTasks() {
-  try {
-    var token = await getToken();
-
-    if (!token) {
-      alert("Login first");
-      setStatus("Login first");
-      return;
-    }
-
-    var res = await fetch(BACKEND + "/api/tasks", {
-      headers: {
-        "Authorization": "Bearer " + token
-      }
-    });
-
-    var data = await res.json();
-    var root = el("tasks");
-    root.innerHTML = "";
-
-    if (!res.ok || !data.ok) {
-      alert(data.error || "Load tasks failed");
-      root.innerHTML = "<div class='output'>Load failed</div>";
-      return;
-    }
-
-    var items = data.data || [];
-
-    if (items.length === 0) {
-      root.innerHTML = "<div class='output'>No tasks found</div>";
-      return;
-    }
-
-    for (var i = 0; i < items.length; i++) {
-      var t = items[i];
-      var div = document.createElement("div");
-      div.className = "task";
-
-      var titleText = t.title || "";
-      var descText = t.description || "";
-      var statusText = t.status || "";
-      var outputText = t.final_output || "";
-
-      div.innerHTML =
-        "<b>" + escapeHtml(titleText) + "</b><br>" +
-        escapeHtml(descText) + "<br>" +
-        "Status: " + escapeHtml(statusText) + "<br>" +
-        "<button type='button' onclick=\"executeTask('" + t.id + "')\">Execute</button>" +
-        "<div class='output'>" + escapeHtml(outputText) + "</div>";
-
-      root.appendChild(div);
-    }
-  } catch (e) {
-    alert(String(e));
-    setStatus(String(e));
-  }
-}
-
-async function executeTask(id) {
-  try {
-    var token = await getToken();
-
-    if (!token) {
-      alert("Login first");
-      setStatus("Login first");
-      return;
-    }
-
-    var res = await fetch(BACKEND + "/api/tasks/" + id + "/execute", {
-      method: "POST",
-      headers: {
-        "Authorization": "Bearer " + token
-      }
-    });
-
-    var data = await res.json();
-
-    if (!res.ok || !data.ok) {
-      alert(data.error || "Execution failed");
-      return;
-    }
-
-    alert("Executed");
-    setStatus("Task executed");
-    await loadTasks();
-  } catch (e) {
-    alert(String(e));
-    setStatus(String(e));
-  }
-}
-
-function escapeHtml(str) {
-  str = String(str);
-  str = str.replace(/&/g, "&amp;");
-  str = str.replace(/</g, "&lt;");
-  str = str.replace(/>/g, "&gt;");
-  str = str.replace(/"/g, "&quot;");
-  str = str.replace(/'/g, "&#039;");
-  return str;
-}
-
-el("signupBtn").addEventListener("click", signup);
-el("loginBtn").addEventListener("click", login);
-el("logoutBtn").addEventListener("click", logout);
-el("createTaskBtn").addEventListener("click", createTask);
-el("refreshBtn").addEventListener("click", loadTasks);
 </script>
 
 </body>
