@@ -5,75 +5,24 @@
 <title>Orchegentra AI</title>
 
 <style>
-body {
-  margin:0;
-  font-family: Arial;
-  background:#0b1020;
-  color:white;
-}
-
-.header {
-  padding:15px;
-  background:#141b34;
-  text-align:center;
-  font-weight:bold;
-  font-size:18px;
-}
-
-.container {
-  padding:15px;
-}
-
-.card {
-  background:#141b34;
-  padding:15px;
-  border-radius:12px;
-  margin-bottom:15px;
-}
-
+body { margin:0; font-family:Arial; background:#0b1020; color:white }
+.header { padding:15px; background:#141b34; text-align:center; font-weight:bold }
+.container { padding:15px }
+.card { background:#141b34; padding:15px; border-radius:12px; margin-bottom:15px }
 input, textarea, button {
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border-radius:8px;
-  border:none;
-  box-sizing:border-box;
+  width:100%; padding:10px; margin-top:10px; border-radius:8px; border:none;
 }
-
-button {
-  background:#5a7cff;
-  color:white;
-  font-weight:bold;
-}
-
-.task {
-  background:#0e1530;
-  padding:10px;
-  border-radius:10px;
-  margin-top:10px;
-}
-
-.status {
-  font-size:12px;
-  color:#aaa;
-  margin-top:5px;
-}
+button { background:#5a7cff; color:white; font-weight:bold }
+.task { background:#0e1530; padding:10px; border-radius:10px; margin-top:10px }
+.status { font-size:12px; color:#aaa; margin-top:5px }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-ORCHEGENTRA AI — DASHBOARD
-</div>
+<div class="header">ORCHEGENTRA AI</div>
 
 <div class="container">
-
-<div class="card">
-<h3>Login (Temporary)</h3>
-<button onclick="login()">Paste Token</button>
-<div id="loginStatus" class="status">Not logged in</div>
-</div>
 
 <div class="card">
 <h3>Create Task</h3>
@@ -92,28 +41,11 @@ ORCHEGENTRA AI — DASHBOARD
 
 <script>
 const BACKEND = "https://adventurous-art-production.up.railway.app";
-let token = "";
-
-function login(){
-  const input = prompt("Paste your Bearer token here:");
-  if(input){
-    token = input;
-    document.getElementById("loginStatus").innerText = "Logged in";
-  }
-}
 
 async function createTask(){
-  if(!token){
-    alert("Login first");
-    return;
-  }
-
   const res = await fetch(BACKEND+"/api/tasks/create",{
     method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "Authorization":"Bearer "+token
-    },
+    headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({
       title: document.getElementById("title").value,
       description: document.getElementById("desc").value
@@ -121,21 +53,11 @@ async function createTask(){
   });
 
   const data = await res.json();
-  alert(JSON.stringify(data));
+  alert("Task Created");
 }
 
 async function loadTasks(){
-  if(!token){
-    alert("Login first");
-    return;
-  }
-
-  const res = await fetch(BACKEND+"/api/tasks",{
-    headers:{
-      "Authorization":"Bearer "+token
-    }
-  });
-
+  const res = await fetch(BACKEND+"/api/tasks");
   const data = await res.json();
 
   const container = document.getElementById("tasks");
@@ -158,16 +80,8 @@ async function loadTasks(){
 }
 
 async function executeTask(id){
-  if(!token){
-    alert("Login first");
-    return;
-  }
-
   await fetch(BACKEND+"/api/tasks/"+id+"/execute",{
-    method:"POST",
-    headers:{
-      "Authorization":"Bearer "+token
-    }
+    method:"POST"
   });
 
   alert("Executed");
