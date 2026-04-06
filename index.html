@@ -17,6 +17,7 @@ body {
   text-align: center;
   background: #141b34;
   font-weight: bold;
+  font-size: 18px;
 }
 
 .container {
@@ -36,6 +37,12 @@ input, textarea, button {
   margin-top: 10px;
   border-radius: 8px;
   border: none;
+  box-sizing: border-box;
+}
+
+textarea {
+  min-height: 110px;
+  resize: vertical;
 }
 
 button {
@@ -54,6 +61,7 @@ button {
 .status {
   font-size: 12px;
   color: #aaa;
+  margin-top: 5px;
 }
 
 .output-box {
@@ -64,8 +72,13 @@ button {
   max-height: 220px;
   overflow: auto;
 }
-</style>
 
+.output-box pre {
+  white-space: pre-wrap;
+  font-size: 12px;
+  margin: 0;
+}
+</style>
 </head>
 
 <body>
@@ -124,7 +137,11 @@ async function loadTasks(){
     const container = document.getElementById("tasks");
     container.innerHTML = "";
 
-    (data.data || []).forEach(task => {
+    const tasks = (data.data || []).sort(function(a, b){
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+
+    tasks.forEach(task => {
 
       let button = "";
 
@@ -138,11 +155,11 @@ async function loadTasks(){
 
       container.innerHTML += `
         <div class="task">
-          <b>${task.title}</b><br>
-          ${task.description}<br>
+          <b>${escapeHtml(task.title || "")}</b><br>
+          ${escapeHtml(task.description || "")}<br>
 
           <div class="status">
-            Status: ${task.status}
+            Status: ${escapeHtml(task.status || "")}
           </div>
 
           ${button}
@@ -151,7 +168,7 @@ async function loadTasks(){
             <b>🧠 Agents Flow:</b><br>
             Chairman → Analyst → CTO → Builder → Security
             <hr style="border:0.5px solid #333">
-            <pre>${task.final_output || "No output yet"}</pre>
+            <pre>${escapeHtml(task.final_output || "No output yet")}</pre>
           </div>
         </div>
       `;
@@ -179,6 +196,15 @@ async function executeTask(id, btn){
   } catch (err) {
     alert("Execute Error: " + err.message);
   }
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 </script>
 
