@@ -89,6 +89,20 @@ button.secondary {
   background: #2a355f;
 }
 
+button.green {
+  background: #2e8b57;
+}
+
+.tabbar {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.tab-btn {
+  flex: 1;
+}
+
 .task {
   background: #0e1530;
   padding: 12px;
@@ -106,21 +120,6 @@ button.secondary {
   font-size: 12px;
   color: #9bb0d9;
   margin-top: 6px;
-}
-
-.output-box {
-  margin-top: 10px;
-  background: #000;
-  padding: 10px;
-  border-radius: 10px;
-  max-height: 220px;
-  overflow: auto;
-}
-
-.output-box pre {
-  white-space: pre-wrap;
-  font-size: 12px;
-  margin: 0;
 }
 
 .badges {
@@ -142,6 +141,37 @@ button.secondary {
 .viewer-title {
   font-size: 15px;
   font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.viewer-box {
+  margin-top: 10px;
+  background: #000;
+  padding: 10px;
+  border-radius: 10px;
+  max-height: 420px;
+  overflow: auto;
+}
+
+.viewer-box pre {
+  white-space: pre-wrap;
+  font-size: 12px;
+  margin: 0;
+}
+
+.section-card {
+  margin-top: 10px;
+  background: #0e1530;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #1c2850;
+}
+
+.section-title {
+  font-weight: bold;
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: #8ab4ff;
 }
 
 .empty {
@@ -149,8 +179,14 @@ button.secondary {
   font-size: 13px;
 }
 
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
 @media (max-width: 700px) {
-  .grid {
+  .grid, .two-col {
     grid-template-columns: 1fr;
   }
 }
@@ -160,7 +196,7 @@ button.secondary {
 <body>
 
 <div class="header">ORCHEGENTRA AI</div>
-<div class="subheader">Premium Dashboard UI</div>
+<div class="subheader">Structured Multi-Agent Workspace</div>
 
 <div class="container">
 
@@ -171,15 +207,15 @@ button.secondary {
         <div class="kpi-value" id="totalTasks">0</div>
       </div>
       <div class="kpi">
-        <div class="kpi-label">Pending / Running</div>
-        <div class="kpi-value" id="pendingTasks">0</div>
+        <div class="kpi-label">Ongoing</div>
+        <div class="kpi-value" id="ongoingTasks">0</div>
       </div>
       <div class="kpi">
         <div class="kpi-label">Completed</div>
         <div class="kpi-value" id="completedTasks">0</div>
       </div>
       <div class="kpi">
-        <div class="kpi-label">Latest Task</div>
+        <div class="kpi-label">Latest</div>
         <div class="kpi-value" id="latestTask">-</div>
       </div>
     </div>
@@ -193,14 +229,23 @@ button.secondary {
   </div>
 
   <div class="card">
-    <h3>Task Output Viewer</h3>
-    <div id="selectedTaskViewer" class="empty">Select a task from below to view its full output.</div>
+    <div class="tabbar">
+      <button class="tab-btn" onclick="setTab('ongoing')">Ongoing</button>
+      <button class="tab-btn secondary" onclick="setTab('completed')">Completed</button>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>Tasks</h3>
-    <button class="secondary" onclick="loadTasks()">Refresh</button>
-    <div id="tasks"></div>
+  <div class="two-col">
+    <div class="card">
+      <h3 id="listTitle">Ongoing Tasks</h3>
+      <button class="secondary" onclick="loadTasks()">Refresh</button>
+      <div id="tasks"></div>
+    </div>
+
+    <div class="card">
+      <h3>Task Detail Viewer</h3>
+      <div id="selectedTaskViewer" class="empty">Select a task to view structured department outputs.</div>
+    </div>
   </div>
 
 </div>
@@ -208,6 +253,13 @@ button.secondary {
 <script>
 const BACKEND = "https://adventurous-art-production.up.railway.app";
 let latestTasks = [];
+let currentTab = "ongoing";
+
+function setTab(tab) {
+  currentTab = tab;
+  document.getElementById("listTitle").innerText = tab === "completed" ? "Completed Tasks" : "Ongoing Tasks";
+  renderTaskList();
+}
 
 async function createTask() {
   try {
@@ -224,6 +276,7 @@ async function createTask() {
     });
 
     const data = await res.json();
+
     if (!res.ok || data.ok === false) {
       alert(data.error || "Task creation failed");
       return;
@@ -243,104 +296,138 @@ async function loadTasks() {
     const res = await fetch(BACKEND + "/api/tasks");
     const data = await res.json();
 
-    const container = document.getElementById("tasks");
-    container.innerHTML = "";
-
     latestTasks = (data.data || []).sort(function(a, b) {
       return new Date(b.created_at) - new Date(a.created_at);
     });
 
     updateDashboard(latestTasks);
-
-    if (latestTasks.length === 0) {
-      container.innerHTML = '<div class="empty">No tasks found.</div>';
-      return;
-    }
-
-    latestTasks.forEach(function(task, index) {
-      let buttonHtml = "";
-
-      if (task.status === "completed") {
-        buttonHtml = '<button disabled style="background:#2e8b57;">Completed</button>';
-      } else if (task.status === "running") {
-        buttonHtml = '<button disabled>Running...</button>';
-      } else {
-        buttonHtml = '<button onclick="executeTask(\'' + task.id + '\', this)">Execute</button>';
-      }
-
-      const div = document.createElement("div");
-      div.className = "task";
-
-      div.innerHTML = `
-        <div class="task-title">${escapeHtml(task.title || "")}</div>
-        <div>${escapeHtml(task.description || "")}</div>
-
-        <div class="status">
-          Status: ${escapeHtml(task.status || "")}
-        </div>
-
-        <div class="badges">
-          <span class="badge">Chairman</span>
-          <span class="badge">Analyst</span>
-          <span class="badge">CTO</span>
-          <span class="badge">Builder</span>
-          <span class="badge">Security</span>
-        </div>
-
-        <button class="secondary" onclick="showTaskOutput(${index})">View Output</button>
-        ${buttonHtml}
-
-        <div class="output-box">
-          <pre>${escapeHtml((task.final_output || "No output yet").slice(0, 600))}${task.final_output && task.final_output.length > 600 ? "\n\n...more in viewer" : ""}</pre>
-        </div>
-      `;
-
-      container.appendChild(div);
-    });
+    renderTaskList();
 
     if (latestTasks.length > 0) {
-      showTaskOutput(0);
+      showTaskOutput(latestTasks[0].id);
     }
-
   } catch (err) {
     alert("Load Error: " + err.message);
   }
 }
 
+function renderTaskList() {
+  const container = document.getElementById("tasks");
+  container.innerHTML = "";
+
+  const filtered = latestTasks.filter(function(task) {
+    if (currentTab === "completed") return task.status === "completed";
+    return task.status !== "completed";
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty">No tasks in this section.</div>';
+    return;
+  }
+
+  filtered.forEach(function(task) {
+    let buttonHtml = "";
+
+    if (task.status === "completed") {
+      buttonHtml = '<button class="green" disabled>Completed</button>';
+    } else if (task.status === "running") {
+      buttonHtml = '<button disabled>Running...</button>';
+    } else {
+      buttonHtml = '<button onclick="executeTask(\'' + task.id + '\', this)">Execute</button>';
+    }
+
+    const div = document.createElement("div");
+    div.className = "task";
+
+    div.innerHTML = `
+      <div class="task-title">${escapeHtml(task.title || "")}</div>
+      <div>${escapeHtml(task.description || "")}</div>
+
+      <div class="status">Status: ${escapeHtml(task.status || "")}</div>
+
+      <div class="badges">
+        <span class="badge">Chairman</span>
+        <span class="badge">CTO</span>
+        <span class="badge">CMO</span>
+        <span class="badge">HR</span>
+        <span class="badge">Data Scientist</span>
+        <span class="badge">Data Engineer</span>
+        <span class="badge">ML Engineer</span>
+        <span class="badge">Operations</span>
+        <span class="badge">Security</span>
+      </div>
+
+      <button class="secondary" onclick="showTaskOutput('${task.id}')">View Details</button>
+      ${buttonHtml}
+    `;
+
+    container.appendChild(div);
+  });
+}
+
 function updateDashboard(tasks) {
   const total = tasks.length;
-  const pending = tasks.filter(function(t) {
+  const ongoing = tasks.filter(function(t) {
     return t.status !== "completed";
   }).length;
   const completed = tasks.filter(function(t) {
     return t.status === "completed";
   }).length;
-  const latest = tasks[0] ? tasks[0].title || "-" : "-";
+  const latest = tasks[0] ? (tasks[0].title || "-") : "-";
 
   document.getElementById("totalTasks").innerText = total;
-  document.getElementById("pendingTasks").innerText = pending;
+  document.getElementById("ongoingTasks").innerText = ongoing;
   document.getElementById("completedTasks").innerText = completed;
   document.getElementById("latestTask").innerText = latest.length > 12 ? latest.slice(0, 12) + "..." : latest;
 }
 
-function showTaskOutput(index) {
-  const task = latestTasks[index];
+function showTaskOutput(taskId) {
+  const task = latestTasks.find(function(t) { return t.id === taskId; });
   if (!task) return;
 
-  document.getElementById("selectedTaskViewer").innerHTML = `
+  const structured = task.structured_output || {};
+  const viewer = document.getElementById("selectedTaskViewer");
+
+  viewer.innerHTML = `
     <div class="viewer-title">${escapeHtml(task.title || "")}</div>
     <div class="status">Status: ${escapeHtml(task.status || "")}</div>
 
     <div class="badges">
       <span class="badge">Chairman</span>
-      <span class="badge">Analyst</span>
       <span class="badge">CTO</span>
-      <span class="badge">Builder</span>
+      <span class="badge">CMO</span>
+      <span class="badge">HR</span>
+      <span class="badge">Data Scientist</span>
+      <span class="badge">Data Engineer</span>
+      <span class="badge">ML Engineer</span>
+      <span class="badge">Operations</span>
       <span class="badge">Security</span>
+      <span class="badge">Final Summary</span>
     </div>
 
-    <div class="output-box" style="max-height:400px;">
+    ${renderSection("Chairman", structured.chairman)}
+    ${renderSection("CTO", structured.cto)}
+    ${renderSection("CMO", structured.cmo)}
+    ${renderSection("HR", structured.hr)}
+    ${renderSection("Data Scientist", structured.data_scientist)}
+    ${renderSection("Data Engineer", structured.data_engineer)}
+    ${renderSection("ML Engineer", structured.ml_engineer)}
+    ${renderSection("Operations", structured.operations)}
+    ${renderSection("Security", structured.security)}
+    ${renderSection("Final Summary", structured.final_summary)}
+
+    <div class="viewer-box">
+      <div class="section-title">Legacy Combined Output</div>
       <pre>${escapeHtml(task.final_output || "No output yet")}</pre>
+    </div>
+  `;
+}
+
+function renderSection(title, content) {
+  return `
+    <div class="section-card">
+      <div class="section-title">${escapeHtml(title)}</div>
+      <div>${escapeHtml(content || "No output yet")}</div>
     </div>
   `;
 }
@@ -365,7 +452,6 @@ async function executeTask(id, btn) {
     setTimeout(function() {
       loadTasks();
     }, 1500);
-
   } catch (err) {
     alert("Execute Error: " + err.message);
     btn.innerText = "Execute";
@@ -374,7 +460,7 @@ async function executeTask(id, btn) {
 }
 
 function escapeHtml(str) {
-  return String(str)
+  return String(str == null ? "" : str)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
