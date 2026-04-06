@@ -7,17 +7,16 @@
 <style>
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: Arial;
   background: #0b1020;
   color: white;
 }
 
 .header {
   padding: 15px;
-  background: #141b34;
   text-align: center;
+  background: #141b34;
   font-weight: bold;
-  font-size: 18px;
 }
 
 .container {
@@ -33,16 +32,10 @@ body {
 
 input, textarea, button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-top: 10px;
   border-radius: 8px;
   border: none;
-  box-sizing: border-box;
-}
-
-textarea {
-  min-height: 110px;
-  resize: vertical;
 }
 
 button {
@@ -61,24 +54,18 @@ button {
 .status {
   font-size: 12px;
   color: #aaa;
-  margin-top: 5px;
 }
 
 .output-box {
   margin-top: 10px;
-  background: #000;
+  background: black;
   padding: 10px;
   border-radius: 8px;
-  max-height: 200px;
+  max-height: 220px;
   overflow: auto;
 }
-
-.output-box pre {
-  white-space: pre-wrap;
-  font-size: 12px;
-  margin: 0;
-}
 </style>
+
 </head>
 
 <body>
@@ -91,8 +78,8 @@ button {
 
   <div class="card">
     <h3>Create Task</h3>
-    <input id="title" placeholder="Task Title">
-    <textarea id="desc" placeholder="Task Description"></textarea>
+    <input id="title" placeholder="Title">
+    <textarea id="desc" placeholder="Description"></textarea>
     <button onclick="createTask()">Create Task</button>
   </div>
 
@@ -107,73 +94,91 @@ button {
 <script>
 const BACKEND = "https://adventurous-art-production.up.railway.app";
 
-async function createTask() {
-  const res = await fetch(BACKEND + "/api/tasks/create", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      title: document.getElementById("title").value,
-      description: document.getElementById("desc").value
-    })
-  });
+// CREATE TASK
+async function createTask(){
+  try {
+    const res = await fetch(BACKEND + "/api/tasks/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: document.getElementById("title").value,
+        description: document.getElementById("desc").value
+      })
+    });
 
-  const data = await res.json();
-  alert("Task Created");
-  loadTasks();
+    const data = await res.json();
+    alert("Task Created ✅");
+    loadTasks();
+
+  } catch (err) {
+    alert("Error: " + err.message);
+  }
 }
 
-async function loadTasks() {
-  const res = await fetch(BACKEND + "/api/tasks");
-  const data = await res.json();
+// LOAD TASKS
+async function loadTasks(){
+  try {
+    const res = await fetch(BACKEND + "/api/tasks");
+    const data = await res.json();
 
-  const container = document.getElementById("tasks");
-  container.innerHTML = "";
+    const container = document.getElementById("tasks");
+    container.innerHTML = "";
 
-  (data.data || []).forEach(task => {
-    const div = document.createElement("div");
-    div.className = "task";
+    (data.data || []).forEach(task => {
 
-    div.innerHTML = `
-      <b>${escapeHtml(task.title || "")}</b><br>
-      ${escapeHtml(task.description || "")}<br>
-      <div class="status">Status: ${escapeHtml(task.status || "")}</div>
+      let button = "";
 
-      <button onclick="executeTask('${task.id}', this)">Execute</button>
+      if (task.status === "completed") {
+        button = `<button disabled style="background:#2e8b57;">Completed</button>`;
+      } else if (task.status === "running") {
+        button = `<button disabled>Running...</button>`;
+      } else {
+        button = `<button onclick="executeTask('${task.id}', this)">Execute</button>`;
+      }
 
-      <div class="output-box">
-        <b>🧠 Agents Flow:</b><br>
-        Chairman → Analyst → CTO → Builder → Security
-        <hr style="border:0.5px solid #333">
-        <pre>${escapeHtml(task.final_output || "No output yet")}</pre>
-      </div>
-    `;
+      container.innerHTML += `
+        <div class="task">
+          <b>${task.title}</b><br>
+          ${task.description}<br>
 
-    container.appendChild(div);
-  });
+          <div class="status">
+            Status: ${task.status}
+          </div>
+
+          ${button}
+
+          <div class="output-box">
+            <b>🧠 Agents Flow:</b><br>
+            Chairman → Analyst → CTO → Builder → Security
+            <hr style="border:0.5px solid #333">
+            <pre>${task.final_output || "No output yet"}</pre>
+          </div>
+        </div>
+      `;
+    });
+
+  } catch (err) {
+    alert("Load Error: " + err.message);
+  }
 }
 
-async function executeTask(id, btn) {
+// EXECUTE TASK
+async function executeTask(id, btn){
   btn.innerText = "Running...";
   btn.disabled = true;
 
-  await fetch(BACKEND + "/api/tasks/" + id + "/execute", {
-    method: "POST"
-  });
+  try {
+    await fetch(BACKEND + "/api/tasks/" + id + "/execute", {
+      method: "POST"
+    });
 
-  btn.innerText = "Completed";
+    setTimeout(() => {
+      loadTasks();
+    }, 1500);
 
-  setTimeout(function () {
-    loadTasks();
-  }, 1000);
-}
-
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+  } catch (err) {
+    alert("Execute Error: " + err.message);
+  }
 }
 </script>
 
