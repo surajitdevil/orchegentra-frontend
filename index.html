@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,40 +8,44 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <style>
-body { margin:0; font-family:Arial; background:#0b1020; color:#fff; padding:20px }
-.container { max-width:900px; margin:auto }
+body { background:#0b1020; color:white; font-family:Arial; padding:20px }
 .card { background:#141b34; padding:16px; border-radius:16px; margin-bottom:16px }
 input,textarea,button { width:100%; padding:12px; margin-top:10px; border-radius:10px; border:none }
 button { background:#5a7cff; color:white; font-weight:bold }
 .task { background:#0e1530; padding:12px; margin-top:10px; border-radius:12px }
-.output { white-space:pre-wrap; margin-top:10px; background:#000; padding:10px; border-radius:10px }
+.output { white-space:pre-wrap; background:#000; padding:10px; border-radius:10px; margin-top:10px }
 </style>
 </head>
 
 <body>
-<div class="container">
 
 <div class="card">
-<h2>Login</h2>
+<h2>Login / Signup</h2>
+
 <input id="email" placeholder="Email">
 <input id="password" type="password" placeholder="Password">
+
 <button onclick="signup()">Signup</button>
 <button onclick="login()">Login</button>
-<div id="authStatus"></div>
+<button onclick="logout()">Logout</button>
+
+<div id="status"></div>
 </div>
 
 <div class="card">
 <h2>Create Task</h2>
+
 <input id="title" placeholder="Title">
 <textarea id="desc" placeholder="Description"></textarea>
+
 <button onclick="createTask()">Create Task</button>
 </div>
 
 <div class="card">
 <h2>Tasks</h2>
+
 <button onclick="loadTasks()">Refresh</button>
 <div id="tasks"></div>
-</div>
 
 </div>
 
@@ -53,27 +57,39 @@ const BACKEND = "https://adventurous-art-production.up.railway.app";
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// SIGNUP
 async function signup(){
   const { error } = await supabase.auth.signUp({
     email: email.value,
     password: password.value
   });
-  authStatus.innerText = error ? error.message : "Signup success";
+
+  status.innerText = error ? error.message : "Signup success";
 }
 
+// LOGIN
 async function login(){
   const { error } = await supabase.auth.signInWithPassword({
     email: email.value,
     password: password.value
   });
-  authStatus.innerText = error ? error.message : "Login success";
+
+  status.innerText = error ? error.message : "Login success";
 }
 
+// LOGOUT
+async function logout(){
+  await supabase.auth.signOut();
+  status.innerText = "Logged out";
+}
+
+// GET TOKEN
 async function getToken(){
   const { data } = await supabase.auth.getSession();
   return data.session?.access_token;
 }
 
+// CREATE TASK
 async function createTask(){
   const token = await getToken();
 
@@ -90,9 +106,10 @@ async function createTask(){
   });
 
   const data = await res.json();
-  alert(data.ok ? "Task Created" : data.error);
+  alert(JSON.stringify(data));
 }
 
+// LOAD TASKS
 async function loadTasks(){
   const token = await getToken();
 
@@ -104,23 +121,25 @@ async function loadTasks(){
 
   const data = await res.json();
 
-  tasks.innerHTML="";
-  (data.data || []).forEach(t=>{
-    const div=document.createElement("div");
+  tasks.innerHTML = "";
+
+  data.data.forEach(t=>{
+    const div = document.createElement("div");
     div.className="task";
 
-    div.innerHTML=`
+    div.innerHTML = `
       <b>${t.title}</b><br>
       ${t.description}<br>
       Status: ${t.status}<br>
       <button onclick="execute('${t.id}')">Execute</button>
-      <div class="output">${t.final_output||""}</div>
+      <div class="output">${t.final_output || ""}</div>
     `;
 
     tasks.appendChild(div);
   });
 }
 
+// EXECUTE TASK
 async function execute(id){
   const token = await getToken();
 
@@ -132,7 +151,7 @@ async function execute(id){
   });
 
   const data = await res.json();
-  alert(data.ok ? "Executed" : data.error);
+  alert("Executed");
   loadTasks();
 }
 </script>
