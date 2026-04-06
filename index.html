@@ -63,7 +63,6 @@ async function signup(){
     email: email.value,
     password: password.value
   });
-
   status.innerText = error ? error.message : "Signup success";
 }
 
@@ -73,7 +72,6 @@ async function login(){
     email: email.value,
     password: password.value
   });
-
   status.innerText = error ? error.message : "Login success";
 }
 
@@ -92,6 +90,11 @@ async function getToken(){
 // CREATE TASK
 async function createTask(){
   const token = await getToken();
+
+  if(!token){
+    alert("Login first");
+    return;
+  }
 
   const res = await fetch(BACKEND+"/api/tasks/create",{
     method:"POST",
@@ -113,6 +116,11 @@ async function createTask(){
 async function loadTasks(){
   const token = await getToken();
 
+  if(!token){
+    alert("Login first");
+    return;
+  }
+
   const res = await fetch(BACKEND+"/api/tasks",{
     headers:{
       "Authorization":"Bearer "+token
@@ -123,7 +131,7 @@ async function loadTasks(){
 
   tasks.innerHTML = "";
 
-  data.data.forEach(t=>{
+  (data.data || []).forEach(t=>{
     const div = document.createElement("div");
     div.className="task";
 
