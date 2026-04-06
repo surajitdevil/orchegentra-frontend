@@ -5,48 +5,113 @@
 <title>Orchegentra AI</title>
 
 <style>
-body { margin:0; font-family:Arial; background:#0b1020; color:white }
-.header { padding:15px; background:#141b34; text-align:center; font-weight:bold }
-.container { padding:15px }
-.card { background:#141b34; padding:15px; border-radius:12px; margin-bottom:15px }
-input, textarea, button {
-  width:100%; padding:10px; margin-top:10px; border-radius:8px; border:none;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0b1020;
+  color: white;
 }
-button { background:#5a7cff; color:white; font-weight:bold }
-.task { background:#0e1530; padding:10px; border-radius:10px; margin-top:10px }
-.status { font-size:12px; color:#aaa; margin-top:5px }
+
+.header {
+  padding: 15px;
+  background: #141b34;
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.container {
+  padding: 15px;
+}
+
+.card {
+  background: #141b34;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+}
+
+input, textarea, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: none;
+  box-sizing: border-box;
+}
+
+textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+button {
+  background: #5a7cff;
+  color: white;
+  font-weight: bold;
+}
+
+.task {
+  background: #0e1530;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.status {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 5px;
+}
+
+.output-box {
+  margin-top: 10px;
+  background: #000;
+  padding: 10px;
+  border-radius: 8px;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.output-box pre {
+  white-space: pre-wrap;
+  font-size: 12px;
+  margin: 0;
+}
 </style>
 </head>
 
 <body>
 
-<div class="header">ORCHEGENTRA AI</div>
+<div class="header">
+  ORCHEGENTRA AI — DASHBOARD
+</div>
 
 <div class="container">
 
-<div class="card">
-<h3>Create Task</h3>
-<input id="title" placeholder="Task Title">
-<textarea id="desc" placeholder="Task Description"></textarea>
-<button onclick="createTask()">Create Task</button>
-</div>
+  <div class="card">
+    <h3>Create Task</h3>
+    <input id="title" placeholder="Task Title">
+    <textarea id="desc" placeholder="Task Description"></textarea>
+    <button onclick="createTask()">Create Task</button>
+  </div>
 
-<div class="card">
-<h3>Tasks</h3>
-<button onclick="loadTasks()">Refresh</button>
-<div id="tasks"></div>
-</div>
+  <div class="card">
+    <h3>Tasks</h3>
+    <button onclick="loadTasks()">Refresh</button>
+    <div id="tasks"></div>
+  </div>
 
 </div>
 
 <script>
 const BACKEND = "https://adventurous-art-production.up.railway.app";
 
-async function createTask(){
-  const res = await fetch(BACKEND+"/api/tasks/create",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
+async function createTask() {
+  const res = await fetch(BACKEND + "/api/tasks/create", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
       title: document.getElementById("title").value,
       description: document.getElementById("desc").value
     })
@@ -54,10 +119,11 @@ async function createTask(){
 
   const data = await res.json();
   alert("Task Created");
+  loadTasks();
 }
 
-async function loadTasks(){
-  const res = await fetch(BACKEND+"/api/tasks");
+async function loadTasks() {
+  const res = await fetch(BACKEND + "/api/tasks");
   const data = await res.json();
 
   const container = document.getElementById("tasks");
@@ -68,24 +134,46 @@ async function loadTasks(){
     div.className = "task";
 
     div.innerHTML = `
-      <b>${task.title}</b><br>
-      ${task.description}<br>
-      <div class="status">Status: ${task.status}</div>
-      <button onclick="executeTask('${task.id}')">Execute</button>
-      <div class="status">${task.final_output || ""}</div>
+      <b>${escapeHtml(task.title || "")}</b><br>
+      ${escapeHtml(task.description || "")}<br>
+      <div class="status">Status: ${escapeHtml(task.status || "")}</div>
+
+      <button onclick="executeTask('${task.id}', this)">Execute</button>
+
+      <div class="output-box">
+        <b>🧠 Agents Flow:</b><br>
+        Chairman → Analyst → CTO → Builder → Security
+        <hr style="border:0.5px solid #333">
+        <pre>${escapeHtml(task.final_output || "No output yet")}</pre>
+      </div>
     `;
 
     container.appendChild(div);
   });
 }
 
-async function executeTask(id){
-  await fetch(BACKEND+"/api/tasks/"+id+"/execute",{
-    method:"POST"
+async function executeTask(id, btn) {
+  btn.innerText = "Running...";
+  btn.disabled = true;
+
+  await fetch(BACKEND + "/api/tasks/" + id + "/execute", {
+    method: "POST"
   });
 
-  alert("Executed");
-  loadTasks();
+  btn.innerText = "Completed";
+
+  setTimeout(function () {
+    loadTasks();
+  }, 1000);
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 </script>
 
