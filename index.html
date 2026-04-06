@@ -3,205 +3,406 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orchegentra AI</title>
-
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0b1020;
-  color: white;
+:root{
+  --bg:#07101f;
+  --panel:#0d1830;
+  --panel2:#101f3d;
+  --line:#22345f;
+  --soft:#97acd8;
+  --text:#f3f7ff;
+  --blue:#5a7cff;
+  --green:#2e8b57;
+  --gold:#c99b2e;
+  --purple:#7d5cff;
+  --red:#b84b5e;
+  --cyan:#33c6d8;
+  --shadow:0 10px 30px rgba(0,0,0,.28);
 }
 
-.header {
-  padding: 16px;
-  text-align: center;
-  background: linear-gradient(90deg, #141b34, #1d2957);
-  font-weight: bold;
-  font-size: 20px;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:
+    radial-gradient(circle at top right, rgba(90,124,255,.18), transparent 30%),
+    radial-gradient(circle at top left, rgba(51,198,216,.12), transparent 25%),
+    var(--bg);
+  color:var(--text);
 }
 
-.subheader {
-  text-align: center;
-  font-size: 12px;
-  color: #9bb0d9;
-  margin-top: 4px;
-  margin-bottom: 8px;
+.app{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:260px 1fr 420px;
 }
 
-.container {
-  padding: 15px;
+.sidebar{
+  background:rgba(8,16,32,.85);
+  border-right:1px solid var(--line);
+  padding:18px 14px;
+  backdrop-filter: blur(10px);
 }
 
-.card {
-  background: #141b34;
-  padding: 15px;
-  border-radius: 14px;
-  margin-bottom: 15px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+.brand{
+  padding:12px;
+  border-radius:16px;
+  background:linear-gradient(135deg, rgba(90,124,255,.18), rgba(51,198,216,.10));
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+.brand-title{
+  font-size:28px;
+  font-weight:900;
+  letter-spacing:.5px;
+}
+.brand-sub{
+  margin-top:6px;
+  color:var(--soft);
+  font-size:12px;
+  letter-spacing:2px;
 }
 
-.kpi {
-  background: #0e1530;
-  padding: 14px;
-  border-radius: 12px;
-  text-align: center;
+.nav{
+  margin-top:18px;
+}
+.nav-btn{
+  width:100%;
+  text-align:left;
+  padding:12px 14px;
+  margin-top:10px;
+  border:none;
+  border-radius:14px;
+  color:var(--text);
+  background:var(--panel);
+  border:1px solid var(--line);
+  font-weight:700;
+}
+.nav-btn.active{
+  background:linear-gradient(90deg, rgba(90,124,255,.25), rgba(51,198,216,.15));
+  box-shadow:0 0 0 1px rgba(90,124,255,.35) inset, 0 0 24px rgba(90,124,255,.08);
+}
+.side-note{
+  margin-top:20px;
+  padding:12px;
+  border-radius:14px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  color:var(--soft);
+  font-size:12px;
+  line-height:1.5;
 }
 
-.kpi-label {
-  font-size: 12px;
-  color: #9bb0d9;
+.main{
+  padding:16px;
 }
 
-.kpi-value {
-  font-size: 24px;
-  font-weight: bold;
-  margin-top: 8px;
+.topbar{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px;
+  border-radius:18px;
+  background:rgba(13,24,48,.78);
+  border:1px solid var(--line);
+  backdrop-filter: blur(12px);
+  box-shadow:var(--shadow);
 }
 
-input, textarea, button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: none;
-  box-sizing: border-box;
+.top-left h1{
+  margin:0;
+  font-size:24px;
+}
+.top-left div{
+  color:var(--soft);
+  margin-top:4px;
+  font-size:12px;
+}
+.top-right{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.pill{
+  padding:8px 12px;
+  border-radius:999px;
+  background:var(--panel2);
+  border:1px solid var(--line);
+  font-size:12px;
+  color:var(--soft);
 }
 
-textarea {
-  min-height: 110px;
-  resize: vertical;
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-top:16px;
+}
+.kpi{
+  padding:16px;
+  border-radius:18px;
+  background:rgba(13,24,48,.82);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+}
+.kpi-label{
+  color:var(--soft);
+  font-size:12px;
+}
+.kpi-value{
+  font-size:28px;
+  font-weight:900;
+  margin-top:10px;
 }
 
-button {
-  background: #5a7cff;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
+.workspace{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px;
 }
 
-button.secondary {
-  background: #2a355f;
+.panel{
+  background:rgba(13,24,48,.82);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:16px;
+  box-shadow:var(--shadow);
 }
 
-button.green {
-  background: #2e8b57;
+.panel-title{
+  font-size:22px;
+  font-weight:900;
+  margin-bottom:12px;
 }
 
-.tabbar {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
+.input, .textarea, .btn{
+  width:100%;
+  border:none;
+  border-radius:14px;
+  padding:14px;
+  margin-top:10px;
+  box-sizing:border-box;
+}
+.input, .textarea{
+  background:#2e3138;
+  color:#fff;
+}
+.textarea{
+  min-height:120px;
+  resize:vertical;
+}
+.btn{
+  background:linear-gradient(90deg, #5a7cff, #6c87ff);
+  color:white;
+  font-weight:800;
+}
+.btn.secondary{
+  background:#25365f;
+}
+.btn.success{
+  background:linear-gradient(90deg, #2e8b57, #3aa96b);
+}
+.tabs{
+  display:flex;
+  gap:10px;
+  margin-bottom:10px;
+}
+.tab-btn{
+  flex:1;
+  border:none;
+  border-radius:12px;
+  padding:12px;
+  background:#25365f;
+  color:white;
+  font-weight:800;
+}
+.tab-btn.active{
+  background:linear-gradient(90deg, rgba(90,124,255,.95), rgba(125,92,255,.95));
 }
 
-.tab-btn {
-  flex: 1;
+.task-list{
+  display:grid;
+  gap:12px;
+}
+.task-card{
+  background:#0b1430;
+  border:1px solid #1d2d59;
+  border-radius:18px;
+  padding:14px;
+}
+.task-title{
+  font-size:16px;
+  font-weight:900;
+}
+.task-desc{
+  margin-top:6px;
+  line-height:1.45;
+  color:#eef3ff;
+}
+.task-meta{
+  margin-top:8px;
+  color:var(--soft);
+  font-size:12px;
+}
+.task-actions{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+.task-actions .btn{
+  margin-top:0;
 }
 
-.task {
-  background: #0e1530;
-  padding: 12px;
-  border-radius: 12px;
-  margin-top: 10px;
-  border: 1px solid #1c2850;
+.right{
+  padding:16px 16px 16px 0;
+}
+.viewer{
+  position:sticky;
+  top:16px;
+  background:rgba(13,24,48,.9);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:16px;
+  box-shadow:var(--shadow);
+  height:calc(100vh - 32px);
+  overflow:auto;
 }
 
-.task-title {
-  font-weight: bold;
-  font-size: 16px;
+.viewer-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+}
+.viewer-title{
+  font-size:22px;
+  font-weight:900;
+}
+.viewer-status{
+  margin-top:6px;
+  color:var(--soft);
+  font-size:12px;
 }
 
-.status {
-  font-size: 12px;
-  color: #9bb0d9;
-  margin-top: 6px;
+.agent-chips{
+  margin-top:14px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.chip{
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+  border:1px solid transparent;
+}
+.chairman{background:rgba(201,155,46,.14); color:#ffd97a; border-color:rgba(201,155,46,.35)}
+.cto{background:rgba(90,124,255,.14); color:#aac0ff; border-color:rgba(90,124,255,.35)}
+.cmo{background:rgba(184,75,94,.14); color:#ffb5c2; border-color:rgba(184,75,94,.35)}
+.hr{background:rgba(51,198,216,.14); color:#98f3ff; border-color:rgba(51,198,216,.35)}
+.ds{background:rgba(125,92,255,.14); color:#c9bbff; border-color:rgba(125,92,255,.35)}
+.de{background:rgba(54,166,127,.14); color:#a7ffd7; border-color:rgba(54,166,127,.35)}
+.ml{background:rgba(255,140,66,.14); color:#ffd0a7; border-color:rgba(255,140,66,.35)}
+.ops{background:rgba(180,180,180,.12); color:#e6e6e6; border-color:rgba(180,180,180,.28)}
+.sec{background:rgba(255,84,84,.12); color:#ffb6b6; border-color:rgba(255,84,84,.28)}
+.sum{background:rgba(255,255,255,.08); color:#fff; border-color:rgba(255,255,255,.18)}
+
+.section{
+  margin-top:14px;
+  background:#091124;
+  border:1px solid #18264c;
+  border-radius:16px;
+  padding:12px;
+}
+.section-title{
+  font-size:13px;
+  font-weight:900;
+  margin-bottom:8px;
+  color:#9dc1ff;
+}
+.section-body{
+  white-space:pre-wrap;
+  font-size:13px;
+  line-height:1.45;
+  color:#f2f6ff;
 }
 
-.badges {
-  margin-top: 8px;
-  line-height: 1.8;
+.empty{
+  color:var(--soft);
+  font-size:13px;
+  line-height:1.5;
 }
 
-.badge {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: #1f2b56;
-  color: #cbd7ff;
-  font-size: 11px;
-  margin-right: 6px;
-  margin-top: 6px;
+@media (max-width: 1100px){
+  .app{
+    grid-template-columns:1fr;
+  }
+  .sidebar{
+    border-right:none;
+    border-bottom:1px solid var(--line);
+  }
+  .right{
+    padding:0 16px 16px 16px;
+  }
+  .viewer{
+    position:relative;
+    top:0;
+    height:auto;
+  }
 }
 
-.viewer-title {
-  font-size: 15px;
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-
-.viewer-box {
-  margin-top: 10px;
-  background: #000;
-  padding: 10px;
-  border-radius: 10px;
-  max-height: 420px;
-  overflow: auto;
-}
-
-.viewer-box pre {
-  white-space: pre-wrap;
-  font-size: 12px;
-  margin: 0;
-}
-
-.section-card {
-  margin-top: 10px;
-  background: #0e1530;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #1c2850;
-}
-
-.section-title {
-  font-weight: bold;
-  font-size: 13px;
-  margin-bottom: 6px;
-  color: #8ab4ff;
-}
-
-.empty {
-  color: #9bb0d9;
-  font-size: 13px;
-}
-
-.two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-}
-
-@media (max-width: 700px) {
-  .grid, .two-col {
-    grid-template-columns: 1fr;
+@media (max-width: 700px){
+  .kpis{
+    grid-template-columns:1fr 1fr;
+  }
+  .task-actions{
+    flex-direction:column;
   }
 }
 </style>
 </head>
-
 <body>
 
-<div class="header">ORCHEGENTRA AI</div>
-<div class="subheader">Structured Multi-Agent Workspace</div>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-title">ORCHEGENTRA</div>
+      <div class="brand-sub">AI COMPANY OS</div>
+    </div>
 
-<div class="container">
+    <div class="nav">
+      <button class="nav-btn active">Dashboard</button>
+      <button class="nav-btn">Workspace</button>
+      <button class="nav-btn">Ongoing</button>
+      <button class="nav-btn">Completed</button>
+      <button class="nav-btn">Agents</button>
+      <button class="nav-btn">Archive</button>
+      <button class="nav-btn">Settings</button>
+    </div>
 
-  <div class="card">
-    <div class="grid">
+    <div class="side-note">
+      Live command center for multi-agent execution, structured outputs, and focused task operations.
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="top-left">
+        <h1>Command Center</h1>
+        <div>Next-level workspace for ongoing and completed AI company tasks</div>
+      </div>
+      <div class="top-right">
+        <div class="pill">System: Active</div>
+        <div class="pill">Mode: Multi-Agent</div>
+        <div class="pill">Workspace: Premium</div>
+      </div>
+    </div>
+
+    <div class="kpis">
       <div class="kpi">
         <div class="kpi-label">Total Tasks</div>
         <div class="kpi-value" id="totalTasks">0</div>
@@ -219,35 +420,31 @@ button.green {
         <div class="kpi-value" id="latestTask">-</div>
       </div>
     </div>
-  </div>
 
-  <div class="card">
-    <h3>Create Task</h3>
-    <input id="title" placeholder="Task Title">
-    <textarea id="desc" placeholder="Task Description"></textarea>
-    <button onclick="createTask()">Create Task</button>
-  </div>
+    <div class="workspace">
+      <div class="panel">
+        <div class="panel-title">Create Task</div>
+        <input class="input" id="title" placeholder="Task Title">
+        <textarea class="textarea" id="desc" placeholder="Task Description"></textarea>
+        <button class="btn" onclick="createTask()">Create Task</button>
+      </div>
 
-  <div class="card">
-    <div class="tabbar">
-      <button class="tab-btn" onclick="setTab('ongoing')">Ongoing</button>
-      <button class="tab-btn secondary" onclick="setTab('completed')">Completed</button>
+      <div class="panel">
+        <div class="tabs">
+          <button id="tabOngoing" class="tab-btn active" onclick="setTab('ongoing')">Ongoing</button>
+          <button id="tabCompleted" class="tab-btn" onclick="setTab('completed')">Completed</button>
+        </div>
+        <button class="btn secondary" onclick="loadTasks()">Refresh Workspace</button>
+        <div id="tasks" class="task-list"></div>
+      </div>
     </div>
-  </div>
+  </main>
 
-  <div class="two-col">
-    <div class="card">
-      <h3 id="listTitle">Ongoing Tasks</h3>
-      <button class="secondary" onclick="loadTasks()">Refresh</button>
-      <div id="tasks"></div>
+  <section class="right">
+    <div class="viewer">
+      <div id="selectedTaskViewer" class="empty">Select a task to open the full department-wise output in this premium viewer panel.</div>
     </div>
-
-    <div class="card">
-      <h3>Task Detail Viewer</h3>
-      <div id="selectedTaskViewer" class="empty">Select a task to view structured department outputs.</div>
-    </div>
-  </div>
-
+  </section>
 </div>
 
 <script>
@@ -255,29 +452,31 @@ const BACKEND = "https://adventurous-art-production.up.railway.app";
 let latestTasks = [];
 let currentTab = "ongoing";
 
-function setTab(tab) {
+function setTab(tab){
   currentTab = tab;
-  document.getElementById("listTitle").innerText = tab === "completed" ? "Completed Tasks" : "Ongoing Tasks";
+  document.getElementById("tabOngoing").classList.remove("active");
+  document.getElementById("tabCompleted").classList.remove("active");
+  if(tab === "ongoing"){
+    document.getElementById("tabOngoing").classList.add("active");
+  } else {
+    document.getElementById("tabCompleted").classList.add("active");
+  }
   renderTaskList();
 }
 
-async function createTask() {
-  try {
+async function createTask(){
+  try{
     const title = document.getElementById("title").value;
     const description = document.getElementById("desc").value;
 
     const res = await fetch(BACKEND + "/api/tasks/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: title,
-        description: description
-      })
+      body: JSON.stringify({ title, description })
     });
 
     const data = await res.json();
-
-    if (!res.ok || data.ok === false) {
+    if(!res.ok || data.ok === false){
       alert(data.error || "Task creation failed");
       return;
     }
@@ -286,93 +485,88 @@ async function createTask() {
     document.getElementById("title").value = "";
     document.getElementById("desc").value = "";
     loadTasks();
-  } catch (err) {
+  }catch(err){
     alert("Error: " + err.message);
   }
 }
 
-async function loadTasks() {
-  try {
+async function loadTasks(){
+  try{
     const res = await fetch(BACKEND + "/api/tasks");
     const data = await res.json();
 
-    latestTasks = (data.data || []).sort(function(a, b) {
+    latestTasks = (data.data || []).sort(function(a,b){
       return new Date(b.created_at) - new Date(a.created_at);
     });
 
     updateDashboard(latestTasks);
     renderTaskList();
 
-    if (latestTasks.length > 0) {
+    if(latestTasks.length > 0){
       showTaskOutput(latestTasks[0].id);
     }
-  } catch (err) {
+  }catch(err){
     alert("Load Error: " + err.message);
   }
 }
 
-function renderTaskList() {
+function renderTaskList(){
   const container = document.getElementById("tasks");
   container.innerHTML = "";
 
-  const filtered = latestTasks.filter(function(task) {
-    if (currentTab === "completed") return task.status === "completed";
+  const filtered = latestTasks.filter(function(task){
+    if(currentTab === "completed") return task.status === "completed";
     return task.status !== "completed";
   });
 
-  if (filtered.length === 0) {
+  if(filtered.length === 0){
     container.innerHTML = '<div class="empty">No tasks in this section.</div>';
     return;
   }
 
-  filtered.forEach(function(task) {
-    let buttonHtml = "";
+  filtered.forEach(function(task){
+    let actionButton = "";
 
-    if (task.status === "completed") {
-      buttonHtml = '<button class="green" disabled>Completed</button>';
-    } else if (task.status === "running") {
-      buttonHtml = '<button disabled>Running...</button>';
-    } else {
-      buttonHtml = '<button onclick="executeTask(\'' + task.id + '\', this)">Execute</button>';
+    if(task.status === "completed"){
+      actionButton = '<button class="btn success" disabled>Completed</button>';
+    }else if(task.status === "running"){
+      actionButton = '<button class="btn" disabled>Running...</button>';
+    }else{
+      actionButton = '<button class="btn" onclick="executeTask(\'' + task.id + '\', this)">Execute</button>';
     }
 
     const div = document.createElement("div");
-    div.className = "task";
-
+    div.className = "task-card";
     div.innerHTML = `
       <div class="task-title">${escapeHtml(task.title || "")}</div>
-      <div>${escapeHtml(task.description || "")}</div>
-
-      <div class="status">Status: ${escapeHtml(task.status || "")}</div>
+      <div class="task-desc">${escapeHtml(task.description || "")}</div>
+      <div class="task-meta">Status: ${escapeHtml(task.status || "")}</div>
 
       <div class="badges">
-        <span class="badge">Chairman</span>
-        <span class="badge">CTO</span>
-        <span class="badge">CMO</span>
-        <span class="badge">HR</span>
-        <span class="badge">Data Scientist</span>
-        <span class="badge">Data Engineer</span>
-        <span class="badge">ML Engineer</span>
-        <span class="badge">Operations</span>
-        <span class="badge">Security</span>
+        <span class="chip chairman">Chairman</span>
+        <span class="chip cto">CTO</span>
+        <span class="chip cmo">CMO</span>
+        <span class="chip hr">HR</span>
+        <span class="chip ds">Data Scientist</span>
+        <span class="chip de">Data Engineer</span>
+        <span class="chip ml">ML Engineer</span>
+        <span class="chip ops">Operations</span>
+        <span class="chip sec">Security</span>
       </div>
 
-      <button class="secondary" onclick="showTaskOutput('${task.id}')">View Details</button>
-      ${buttonHtml}
+      <div class="task-actions">
+        <button class="btn secondary" onclick="showTaskOutput('${task.id}')">Open Viewer</button>
+        ${actionButton}
+      </div>
     `;
-
     container.appendChild(div);
   });
 }
 
-function updateDashboard(tasks) {
+function updateDashboard(tasks){
   const total = tasks.length;
-  const ongoing = tasks.filter(function(t) {
-    return t.status !== "completed";
-  }).length;
-  const completed = tasks.filter(function(t) {
-    return t.status === "completed";
-  }).length;
+  const ongoing = tasks.filter(function(t){ return t.status !== "completed"; }).length;
+  const completed = tasks.filter(function(t){ return t.status === "completed"; }).length;
   const latest = tasks[0] ? (tasks[0].title || "-") : "-";
 
   document.getElementById("totalTasks").innerText = total;
@@ -381,28 +575,30 @@ function updateDashboard(tasks) {
   document.getElementById("latestTask").innerText = latest.length > 12 ? latest.slice(0, 12) + "..." : latest;
 }
 
-function showTaskOutput(taskId) {
-  const task = latestTasks.find(function(t) { return t.id === taskId; });
-  if (!task) return;
+function showTaskOutput(taskId){
+  const task = latestTasks.find(function(t){ return t.id === taskId; });
+  if(!task) return;
 
   const structured = task.structured_output || {};
-  const viewer = document.getElementById("selectedTaskViewer");
+  document.getElementById("selectedTaskViewer").innerHTML = `
+    <div class="viewer-head">
+      <div>
+        <div class="viewer-title">${escapeHtml(task.title || "")}</div>
+        <div class="viewer-status">Status: ${escapeHtml(task.status || "")}</div>
+      </div>
+    </div>
 
-  viewer.innerHTML = `
-    <div class="viewer-title">${escapeHtml(task.title || "")}</div>
-    <div class="status">Status: ${escapeHtml(task.status || "")}</div>
-
-    <div class="badges">
-      <span class="badge">Chairman</span>
-      <span class="badge">CTO</span>
-      <span class="badge">CMO</span>
-      <span class="badge">HR</span>
-      <span class="badge">Data Scientist</span>
-      <span class="badge">Data Engineer</span>
-      <span class="badge">ML Engineer</span>
-      <span class="badge">Operations</span>
-      <span class="badge">Security</span>
-      <span class="badge">Final Summary</span>
+    <div class="agent-chips">
+      <span class="chip chairman">Chairman</span>
+      <span class="chip cto">CTO</span>
+      <span class="chip cmo">CMO</span>
+      <span class="chip hr">HR</span>
+      <span class="chip ds">Data Scientist</span>
+      <span class="chip de">Data Engineer</span>
+      <span class="chip ml">ML Engineer</span>
+      <span class="chip ops">Operations</span>
+      <span class="chip sec">Security</span>
+      <span class="chip sum">Final Summary</span>
     </div>
 
     ${renderSection("Chairman", structured.chairman)}
@@ -416,50 +612,50 @@ function showTaskOutput(taskId) {
     ${renderSection("Security", structured.security)}
     ${renderSection("Final Summary", structured.final_summary)}
 
-    <div class="viewer-box">
+    <div class="section">
       <div class="section-title">Legacy Combined Output</div>
-      <pre>${escapeHtml(task.final_output || "No output yet")}</pre>
+      <div class="section-body">${escapeHtml(task.final_output || "No output yet")}</div>
     </div>
   `;
 }
 
-function renderSection(title, content) {
+function renderSection(title, content){
   return `
-    <div class="section-card">
+    <div class="section">
       <div class="section-title">${escapeHtml(title)}</div>
-      <div>${escapeHtml(content || "No output yet")}</div>
+      <div class="section-body">${escapeHtml(content || "No output yet")}</div>
     </div>
   `;
 }
 
-async function executeTask(id, btn) {
+async function executeTask(id, btn){
   btn.innerText = "Running...";
   btn.disabled = true;
 
-  try {
+  try{
     const res = await fetch(BACKEND + "/api/tasks/" + id + "/execute", {
       method: "POST"
     });
 
     const data = await res.json();
-    if (!res.ok || data.ok === false) {
+    if(!res.ok || data.ok === false){
       alert(data.error || "Execution failed");
       btn.innerText = "Execute";
       btn.disabled = false;
       return;
     }
 
-    setTimeout(function() {
+    setTimeout(function(){
       loadTasks();
     }, 1500);
-  } catch (err) {
+  }catch(err){
     alert("Execute Error: " + err.message);
     btn.innerText = "Execute";
     btn.disabled = false;
   }
 }
 
-function escapeHtml(str) {
+function escapeHtml(str){
   return String(str == null ? "" : str)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
