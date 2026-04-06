@@ -1,119 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>ORCHEGENTRA AI — Frontend</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orchegentra AI</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0b0f1a;
-      color: white;
-      margin: 0;
-      padding: 20px;
-    }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
-    h1 {
-      text-align: center;
-      color: #00f5ff;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: auto;
-    }
-
-    input, textarea, button {
-      width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-    }
-
-    button {
-      background: #00f5ff;
-      color: black;
-      font-weight: bold;
-    }
-
-    .task {
-      background: #111827;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 8px;
-    }
-  </style>
+<style>
+body { margin:0; font-family:Arial; background:#0b1020; color:#fff; padding:20px }
+.container { max-width:900px; margin:auto }
+.card { background:#141b34; padding:16px; border-radius:16px; margin-bottom:16px }
+input,textarea,button { width:100%; padding:12px; margin-top:10px; border-radius:10px; border:none }
+button { background:#5a7cff; color:white; font-weight:bold }
+.task { background:#0e1530; padding:12px; margin-top:10px; border-radius:12px }
+.output { white-space:pre-wrap; margin-top:10px; background:#000; padding:10px; border-radius:10px }
+</style>
 </head>
 
 <body>
-
-<h1>ORCHEGENTRA AI</h1>
-
 <div class="container">
 
-  <input id="backendUrl" placeholder="Backend URL" value="https://adventurous-art-production.up.railway.app" />
+<div class="card">
+<h2>Login</h2>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="signup()">Signup</button>
+<button onclick="login()">Login</button>
+<div id="authStatus"></div>
+</div>
 
-  <input id="title" placeholder="Task Title" />
-  <textarea id="desc" placeholder="Task Description"></textarea>
+<div class="card">
+<h2>Create Task</h2>
+<input id="title" placeholder="Title">
+<textarea id="desc" placeholder="Description"></textarea>
+<button onclick="createTask()">Create Task</button>
+</div>
 
-  <button onclick="createTask()">Create Task</button>
-  <button onclick="loadTasks()">Load Tasks</button>
-
-  <div id="tasks"></div>
+<div class="card">
+<h2>Tasks</h2>
+<button onclick="loadTasks()">Refresh</button>
+<div id="tasks"></div>
+</div>
 
 </div>
 
 <script>
-  function getBase() {
-    return document.getElementById("backendUrl").value;
-  }
+const SUPABASE_URL = "https://etdbqqpmqfhzlsbvwm.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0ZGJxcXBtcWZoemxzYnZ3bW51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxNDk4MzQsImV4cCI6MjA5MDcyNTgzNH0._u2OmAXIz65SZNLp-nfqbRYYFjZtYugXTYdRPeWG2BE";
 
-  async function createTask() {
-    const title = document.getElementById("title").value;
-    const description = document.getElementById("desc").value;
+const BACKEND = "https://adventurous-art-production.up.railway.app";
 
-    const res = await fetch(getBase() + "/api/tasks/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, description })
-    });
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const data = await res.json();
-    alert("Task Created: " + data.task.id);
-  }
+async function signup(){
+  const { error } = await supabase.auth.signUp({
+    email: email.value,
+    password: password.value
+  });
+  authStatus.innerText = error ? error.message : "Signup success";
+}
 
-  async function executeTask(id) {
-    const res = await fetch(getBase() + "/api/tasks/" + id + "/execute", {
-      method: "POST"
-    });
+async function login(){
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email.value,
+    password: password.value
+  });
+  authStatus.innerText = error ? error.message : "Login success";
+}
 
-    const data = await res.json();
-    alert("Result:\n" + data.result);
-  }
+async function getToken(){
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token;
+}
 
-  async function loadTasks() {
-    const res = await fetch(getBase() + "/api/tasks");
-    const data = await res.json();
+async function createTask(){
+  const token = await getToken();
 
-    const container = document.getElementById("tasks");
-    container.innerHTML = "";
+  const res = await fetch(BACKEND+"/api/tasks/create",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":"Bearer "+token
+    },
+    body:JSON.stringify({
+      title:title.value,
+      description:desc.value
+    })
+  });
 
-    data.data.forEach(task => {
-      const div = document.createElement("div");
-      div.className = "task";
+  const data = await res.json();
+  alert(data.ok ? "Task Created" : data.error);
+}
 
-      div.innerHTML = `
-        <b>${task.title}</b><br/>
-        ${task.description}<br/>
-        Status: ${task.status}<br/>
-        <button onclick="executeTask('${task.id}')">Execute</button>
-      `;
+async function loadTasks(){
+  const token = await getToken();
 
-      container.appendChild(div);
-    });
-  }
+  const res = await fetch(BACKEND+"/api/tasks",{
+    headers:{
+      "Authorization":"Bearer "+token
+    }
+  });
+
+  const data = await res.json();
+
+  tasks.innerHTML="";
+  (data.data || []).forEach(t=>{
+    const div=document.createElement("div");
+    div.className="task";
+
+    div.innerHTML=`
+      <b>${t.title}</b><br>
+      ${t.description}<br>
+      Status: ${t.status}<br>
+      <button onclick="execute('${t.id}')">Execute</button>
+      <div class="output">${t.final_output||""}</div>
+    `;
+
+    tasks.appendChild(div);
+  });
+}
+
+async function execute(id){
+  const token = await getToken();
+
+  const res = await fetch(BACKEND+"/api/tasks/"+id+"/execute",{
+    method:"POST",
+    headers:{
+      "Authorization":"Bearer "+token
+    }
+  });
+
+  const data = await res.json();
+  alert(data.ok ? "Executed" : data.error);
+  loadTasks();
+}
 </script>
 
 </body>
