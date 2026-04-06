@@ -7,17 +7,25 @@
 <style>
 body {
   margin: 0;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   background: #0b1020;
   color: white;
 }
 
 .header {
-  padding: 15px;
+  padding: 16px;
   text-align: center;
-  background: #141b34;
+  background: linear-gradient(90deg, #141b34, #1d2957);
   font-weight: bold;
-  font-size: 18px;
+  font-size: 20px;
+}
+
+.subheader {
+  text-align: center;
+  font-size: 12px;
+  color: #9bb0d9;
+  margin-top: 4px;
+  margin-bottom: 8px;
 }
 
 .container {
@@ -27,15 +35,40 @@ body {
 .card {
   background: #141b34;
   padding: 15px;
-  border-radius: 12px;
+  border-radius: 14px;
   margin-bottom: 15px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.kpi {
+  background: #0e1530;
+  padding: 14px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.kpi-label {
+  font-size: 12px;
+  color: #9bb0d9;
+}
+
+.kpi-value {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 8px;
 }
 
 input, textarea, button {
   width: 100%;
   padding: 12px;
   margin-top: 10px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: none;
   box-sizing: border-box;
 }
@@ -49,26 +82,37 @@ button {
   background: #5a7cff;
   color: white;
   font-weight: bold;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: #2a355f;
 }
 
 .task {
   background: #0e1530;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 12px;
   margin-top: 10px;
+  border: 1px solid #1c2850;
+}
+
+.task-title {
+  font-weight: bold;
+  font-size: 16px;
 }
 
 .status {
   font-size: 12px;
-  color: #aaa;
-  margin-top: 5px;
+  color: #9bb0d9;
+  margin-top: 6px;
 }
 
 .output-box {
   margin-top: 10px;
-  background: black;
+  background: #000;
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 10px;
   max-height: 220px;
   overflow: auto;
 }
@@ -78,27 +122,84 @@ button {
   font-size: 12px;
   margin: 0;
 }
+
+.badges {
+  margin-top: 8px;
+  line-height: 1.8;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #1f2b56;
+  color: #cbd7ff;
+  font-size: 11px;
+  margin-right: 6px;
+  margin-top: 6px;
+}
+
+.viewer-title {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.empty {
+  color: #9bb0d9;
+  font-size: 13px;
+}
+
+@media (max-width: 700px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
 
 <body>
 
-<div class="header">
-  ORCHEGENTRA AI — DASHBOARD
-</div>
+<div class="header">ORCHEGENTRA AI</div>
+<div class="subheader">Premium Dashboard UI</div>
 
 <div class="container">
 
   <div class="card">
+    <div class="grid">
+      <div class="kpi">
+        <div class="kpi-label">Total Tasks</div>
+        <div class="kpi-value" id="totalTasks">0</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Pending / Running</div>
+        <div class="kpi-value" id="pendingTasks">0</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Completed</div>
+        <div class="kpi-value" id="completedTasks">0</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Latest Task</div>
+        <div class="kpi-value" id="latestTask">-</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
     <h3>Create Task</h3>
-    <input id="title" placeholder="Title">
-    <textarea id="desc" placeholder="Description"></textarea>
+    <input id="title" placeholder="Task Title">
+    <textarea id="desc" placeholder="Task Description"></textarea>
     <button onclick="createTask()">Create Task</button>
   </div>
 
   <div class="card">
+    <h3>Task Output Viewer</h3>
+    <div id="selectedTaskViewer" class="empty">Select a task from below to view its full output.</div>
+  </div>
+
+  <div class="card">
     <h3>Tasks</h3>
-    <button onclick="loadTasks()">Refresh</button>
+    <button class="secondary" onclick="loadTasks()">Refresh</button>
     <div id="tasks"></div>
   </div>
 
@@ -106,30 +207,38 @@ button {
 
 <script>
 const BACKEND = "https://adventurous-art-production.up.railway.app";
+let latestTasks = [];
 
-// CREATE TASK
-async function createTask(){
+async function createTask() {
   try {
+    const title = document.getElementById("title").value;
+    const description = document.getElementById("desc").value;
+
     const res = await fetch(BACKEND + "/api/tasks/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        title: document.getElementById("title").value,
-        description: document.getElementById("desc").value
+        title: title,
+        description: description
       })
     });
 
     const data = await res.json();
-    alert("Task Created ✅");
-    loadTasks();
+    if (!res.ok || data.ok === false) {
+      alert(data.error || "Task creation failed");
+      return;
+    }
 
+    alert("Task Created ✅");
+    document.getElementById("title").value = "";
+    document.getElementById("desc").value = "";
+    loadTasks();
   } catch (err) {
     alert("Error: " + err.message);
   }
 }
 
-// LOAD TASKS
-async function loadTasks(){
+async function loadTasks() {
   try {
     const res = await fetch(BACKEND + "/api/tasks");
     const data = await res.json();
@@ -137,64 +246,130 @@ async function loadTasks(){
     const container = document.getElementById("tasks");
     container.innerHTML = "";
 
-    const tasks = (data.data || []).sort(function(a, b){
+    latestTasks = (data.data || []).sort(function(a, b) {
       return new Date(b.created_at) - new Date(a.created_at);
     });
 
-    tasks.forEach(task => {
+    updateDashboard(latestTasks);
 
-      let button = "";
+    if (latestTasks.length === 0) {
+      container.innerHTML = '<div class="empty">No tasks found.</div>';
+      return;
+    }
+
+    latestTasks.forEach(function(task, index) {
+      let buttonHtml = "";
 
       if (task.status === "completed") {
-        button = `<button disabled style="background:#2e8b57;">Completed</button>`;
+        buttonHtml = '<button disabled style="background:#2e8b57;">Completed</button>';
       } else if (task.status === "running") {
-        button = `<button disabled>Running...</button>`;
+        buttonHtml = '<button disabled>Running...</button>';
       } else {
-        button = `<button onclick="executeTask('${task.id}', this)">Execute</button>`;
+        buttonHtml = '<button onclick="executeTask(\'' + task.id + '\', this)">Execute</button>';
       }
 
-      container.innerHTML += `
-        <div class="task">
-          <b>${escapeHtml(task.title || "")}</b><br>
-          ${escapeHtml(task.description || "")}<br>
+      const div = document.createElement("div");
+      div.className = "task";
 
-          <div class="status">
-            Status: ${escapeHtml(task.status || "")}
-          </div>
+      div.innerHTML = `
+        <div class="task-title">${escapeHtml(task.title || "")}</div>
+        <div>${escapeHtml(task.description || "")}</div>
 
-          ${button}
+        <div class="status">
+          Status: ${escapeHtml(task.status || "")}
+        </div>
 
-          <div class="output-box">
-            <b>🧠 Agents Flow:</b><br>
-            Chairman → Analyst → CTO → Builder → Security
-            <hr style="border:0.5px solid #333">
-            <pre>${escapeHtml(task.final_output || "No output yet")}</pre>
-          </div>
+        <div class="badges">
+          <span class="badge">Chairman</span>
+          <span class="badge">Analyst</span>
+          <span class="badge">CTO</span>
+          <span class="badge">Builder</span>
+          <span class="badge">Security</span>
+        </div>
+
+        <button class="secondary" onclick="showTaskOutput(${index})">View Output</button>
+        ${buttonHtml}
+
+        <div class="output-box">
+          <pre>${escapeHtml((task.final_output || "No output yet").slice(0, 600))}${task.final_output && task.final_output.length > 600 ? "\n\n...more in viewer" : ""}</pre>
         </div>
       `;
+
+      container.appendChild(div);
     });
+
+    if (latestTasks.length > 0) {
+      showTaskOutput(0);
+    }
 
   } catch (err) {
     alert("Load Error: " + err.message);
   }
 }
 
-// EXECUTE TASK
-async function executeTask(id, btn){
+function updateDashboard(tasks) {
+  const total = tasks.length;
+  const pending = tasks.filter(function(t) {
+    return t.status !== "completed";
+  }).length;
+  const completed = tasks.filter(function(t) {
+    return t.status === "completed";
+  }).length;
+  const latest = tasks[0] ? tasks[0].title || "-" : "-";
+
+  document.getElementById("totalTasks").innerText = total;
+  document.getElementById("pendingTasks").innerText = pending;
+  document.getElementById("completedTasks").innerText = completed;
+  document.getElementById("latestTask").innerText = latest.length > 12 ? latest.slice(0, 12) + "..." : latest;
+}
+
+function showTaskOutput(index) {
+  const task = latestTasks[index];
+  if (!task) return;
+
+  document.getElementById("selectedTaskViewer").innerHTML = `
+    <div class="viewer-title">${escapeHtml(task.title || "")}</div>
+    <div class="status">Status: ${escapeHtml(task.status || "")}</div>
+
+    <div class="badges">
+      <span class="badge">Chairman</span>
+      <span class="badge">Analyst</span>
+      <span class="badge">CTO</span>
+      <span class="badge">Builder</span>
+      <span class="badge">Security</span>
+    </div>
+
+    <div class="output-box" style="max-height:400px;">
+      <pre>${escapeHtml(task.final_output || "No output yet")}</pre>
+    </div>
+  `;
+}
+
+async function executeTask(id, btn) {
   btn.innerText = "Running...";
   btn.disabled = true;
 
   try {
-    await fetch(BACKEND + "/api/tasks/" + id + "/execute", {
+    const res = await fetch(BACKEND + "/api/tasks/" + id + "/execute", {
       method: "POST"
     });
 
-    setTimeout(() => {
+    const data = await res.json();
+    if (!res.ok || data.ok === false) {
+      alert(data.error || "Execution failed");
+      btn.innerText = "Execute";
+      btn.disabled = false;
+      return;
+    }
+
+    setTimeout(function() {
       loadTasks();
     }, 1500);
 
   } catch (err) {
     alert("Execute Error: " + err.message);
+    btn.innerText = "Execute";
+    btn.disabled = false;
   }
 }
 
@@ -206,6 +381,8 @@ function escapeHtml(str) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
+
+loadTasks();
 </script>
 
 </body>
