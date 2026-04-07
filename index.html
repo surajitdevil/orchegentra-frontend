@@ -1632,7 +1632,7 @@ function formatOutput(text) {
     </div>
   `;
 }
-  funcasync function dispatchTask() {
+  async function dispatchTask() {
   const title = document.getElementById('task-title')?.value.trim();
   const desc = document.getElementById('task-desc')?.value.trim();
 
@@ -1644,8 +1644,8 @@ function formatOutput(text) {
   showToast('Sending to Orchegentra AI...');
 
   try {
-    const res = await fetch('https://adventurous-art-production.up.railway
-                            .app/api/task/execute' , {
+    const res = await fetch('https://adventurous-art-production.up.railway.app/api/task/execute', {
+                      
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, description: desc })
@@ -1662,7 +1662,7 @@ function formatOutput(text) {
     showToast('Backend error');
   }
 }
-    co
+    
 
   function clearForm() {
     const title = document.getElementById('task-title');
@@ -1948,7 +1948,8 @@ function openOutputModal(btn) {
 
   const card = btn.closest('.task-card');
   const taskTitle = card?.querySelector('.task-title')?.textContent || 'Task';
-  const output = window.lastOutput || {};
+  const output = window.lastOutput?.structured_output || {};
+const finalOutput = window.lastOutput?.final_output || "";
 
   body.innerHTML = `
     <div class="section">
@@ -1969,7 +1970,7 @@ function openOutputModal(btn) {
     </div>
     <div class="section">
       <div class="section-title">Final Output</div>
-      <div class="section-body">${formatOutput(output.final || 'No final output available.')}</div>
+      <div class="section-body">${formatOutput(finalOutput)}</div>
     </div>
   `;
 
