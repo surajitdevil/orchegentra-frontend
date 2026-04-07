@@ -1,9 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ORCHEGENTRA AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root{
       --bg:#040814;
@@ -40,11 +42,10 @@
       --shadow:0 18px 45px rgba(0,0,0,.38);
     }
 
-    *{box-sizing:border-box}
-    html,body{margin:0;min-height:100%}
-
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%}
     body{
-      font-family:Arial,sans-serif;
+      font-family:'Inter',sans-serif;
       color:var(--text);
       background:
         radial-gradient(circle at 12% 10%, rgba(40,215,255,.11), transparent 18%),
@@ -64,21 +65,29 @@
         linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
       background-size:28px 28px;
+      z-index:0;
     }
 
     .app{
       display:grid;
       grid-template-columns:270px 1fr 430px;
       min-height:100vh;
+      position:relative;
+      z-index:1;
     }
 
+    /* \u2500\u2500 SIDEBAR \u2500\u2500 */
     .sidebar{
-      background:rgba(6,10,22,.95);
+      background:rgba(6,10,22,.97);
       border-right:1px solid var(--line);
       padding:18px;
       position:sticky;
       top:0;
       height:100vh;
+      overflow-y:auto;
+      display:flex;
+      flex-direction:column;
+      gap:0;
     }
 
     .brand{
@@ -89,94 +98,152 @@
       box-shadow:0 0 28px rgba(90,124,255,.13);
     }
 
+    .brand-logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:6px;
+    }
+
+    .brand-icon{
+      width:38px;height:38px;
+      border-radius:10px;
+      background:linear-gradient(135deg,var(--blue),var(--purple));
+      display:flex;align-items:center;justify-content:center;
+      font-size:18px;
+      box-shadow:0 0 18px rgba(90,124,255,.5);
+    }
+
     .brand-title{
-      font-size:28px;
-      font-weight:900;
-      letter-spacing:.6px;
+      font-family:'Rajdhani',sans-serif;
+      font-size:22px;
+      font-weight:700;
+      letter-spacing:1.5px;
+      background:linear-gradient(90deg,#fff,var(--cyan));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
     }
 
     .brand-sub{
-      margin-top:6px;
-      font-size:11px;
+      font-size:10px;
       letter-spacing:2.5px;
       color:var(--muted);
+      text-transform:uppercase;
     }
 
     .nav{
       margin-top:18px;
       display:grid;
-      gap:10px;
+      gap:6px;
     }
 
     .nav button{
       width:100%;
-      padding:13px 14px;
-      border:none;
+      padding:12px 14px;
       border-radius:14px;
-      background:#0f1a3a;
-      color:white;
+      background:#0a1128;
+      color:#b8c9e8;
       cursor:pointer;
-      border:1px solid #223a72;
-      font-weight:800;
+      border:1px solid rgba(34,58,114,.5);
+      font-weight:700;
+      font-size:13px;
       text-align:left;
-      transition:.2s;
+      transition:.22s;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-family:'Inter',sans-serif;
     }
 
+    .nav button .nav-icon{font-size:15px;width:20px;text-align:center;}
+
     .nav button:hover{
-      transform:translateY(-1px);
-      box-shadow:0 0 20px rgba(90,124,255,.18);
+      transform:translateX(3px);
+      color:#fff;
+      border-color:rgba(90,124,255,.4);
+      background:#0f1a3a;
     }
 
     .nav button.active{
+      color:#fff;
       border-color:#5473ca;
-      box-shadow:0 0 24px rgba(90,124,255,.35);
+      box-shadow:0 0 18px rgba(90,124,255,.22);
     }
 
-    .nav button.home.active{ background:linear-gradient(90deg, rgba(40,215,255,.22), rgba(40,215,255,.05)); }
-    .nav button.command.active{ background:linear-gradient(90deg, rgba(90,124,255,.24), rgba(90,124,255,.05)); }
-    .nav button.agents.active{ background:linear-gradient(90deg, rgba(143,92,255,.24), rgba(143,92,255,.05)); }
-    .nav button.workspace.active{ background:linear-gradient(90deg, rgba(40,215,122,.22), rgba(40,215,122,.05)); }
-    .nav button.ongoing.active{ background:linear-gradient(90deg, rgba(255,157,61,.22), rgba(255,157,61,.05)); }
-    .nav button.completed.active{ background:linear-gradient(90deg, rgba(255,93,177,.22), rgba(255,93,177,.05)); }
-    .nav button.output.active{ background:linear-gradient(90deg, rgba(217,166,40,.22), rgba(217,166,40,.05)); }
-    .nav button.files.active{ background:linear-gradient(90deg, rgba(114,233,255,.22), rgba(114,233,255,.05)); }
-    .nav button.settings.active{ background:linear-gradient(90deg, rgba(255,255,255,.14), rgba(255,255,255,.03)); }
+    .nav button.home.active{background:linear-gradient(90deg,rgba(40,215,255,.18),rgba(40,215,255,.04));border-color:rgba(40,215,255,.5);}
+    .nav button.command.active{background:linear-gradient(90deg,rgba(90,124,255,.22),rgba(90,124,255,.04));border-color:rgba(90,124,255,.55);}
+    .nav button.agents.active{background:linear-gradient(90deg,rgba(143,92,255,.22),rgba(143,92,255,.04));border-color:rgba(143,92,255,.55);}
+    .nav button.workspace.active{background:linear-gradient(90deg,rgba(40,215,122,.18),rgba(40,215,122,.04));border-color:rgba(40,215,122,.5);}
+    .nav button.ongoing.active{background:linear-gradient(90deg,rgba(255,157,61,.18),rgba(255,157,61,.04));border-color:rgba(255,157,61,.5);}
+    .nav button.completed.active{background:linear-gradient(90deg,rgba(255,93,177,.18),rgba(255,93,177,.04));border-color:rgba(255,93,177,.5);}
+    .nav button.output.active{background:linear-gradient(90deg,rgba(217,166,40,.18),rgba(217,166,40,.04));border-color:rgba(217,166,40,.5);}
+    .nav button.files.active{background:linear-gradient(90deg,rgba(114,233,255,.18),rgba(114,233,255,.04));border-color:rgba(114,233,255,.5);}
+    .nav button.settings.active{background:linear-gradient(90deg,rgba(255,255,255,.10),rgba(255,255,255,.02));border-color:rgba(255,255,255,.2);}
+
+    .nav-divider{
+      height:1px;
+      background:var(--line);
+      margin:8px 0;
+      border-radius:2px;
+    }
+
+    .side-status{
+      margin-top:auto;
+      padding-top:18px;
+    }
 
     .side-box{
-      margin-top:18px;
       padding:14px;
       border-radius:16px;
       background:rgba(255,255,255,.03);
       border:1px solid var(--line);
       color:var(--muted);
       font-size:12px;
-      line-height:1.6;
+      line-height:1.7;
     }
 
+    .side-box strong{color:var(--text);}
+
+    .online-dot{
+      display:inline-block;
+      width:7px;height:7px;
+      border-radius:50%;
+      background:var(--green);
+      box-shadow:0 0 8px var(--green);
+      margin-right:5px;
+      animation:pulse 2s infinite;
+    }
+
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+    /* \u2500\u2500 MAIN \u2500\u2500 */
     .main{
       padding:18px;
+      min-width:0;
     }
 
     .topbar{
       background:rgba(10,18,38,.88);
       border:1px solid var(--line);
       border-radius:20px;
-      padding:16px
-
-    display:flex;
+      padding:16px 20px;
+      display:flex;
       justify-content:space-between;
       gap:14px;
       align-items:center;
       box-shadow:var(--shadow);
+      backdrop-filter:blur(10px);
     }
 
     .topbar h1{
-      margin:0;
-      font-size:24px;
+      font-family:'Rajdhani',sans-serif;
+      font-size:26px;
+      font-weight:700;
+      letter-spacing:.5px;
     }
 
     .topbar p{
-      margin:6px 0 0;
+      margin:3px 0 0;
       color:var(--muted);
       font-size:12px;
     }
@@ -188,30 +255,31 @@
     }
 
     .tag{
-      padding:8px 11px;
+      padding:7px 12px;
       border-radius:999px;
       background:rgba(255,255,255,.05);
       border:1px solid var(--line);
-      font-size:12px;
+      font-size:11px;
       color:var(--muted);
+      font-weight:600;
     }
 
-    .page{
-      display:none;
-      margin-top:16px;
-    }
+    .tag.green{border-color:rgba(40,215,122,.35);color:var(--green);background:rgba(40,215,122,.08);}
+    .tag.blue{border-color:rgba(90,124,255,.35);color:#7fa3ff;background:rgba(90,124,255,.08);}
+    .tag.orange{border-color:rgba(255,157,61,.35);color:var(--orange);background:rgba(255,157,61,.08);}
 
-    .page.active{
-      display:block;
-    }
+    .page{display:none;margin-top:16px;animation:fadeIn .25s ease;}
+    .page.active{display:block;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
     .panel{
       background:var(--panel);
       border:1px solid var(--line);
       border-radius:20px;
-      padding:16px;
+      padding:18px;
       margin-bottom:16px;
       box-shadow:var(--shadow);
+      backdrop-filter:blur(6px);
     }
 
     .hero{
@@ -219,199 +287,1196 @@
       border:1px solid var(--line2);
     }
 
-    .panel h2{
-      margin:0 0 10px;
-      font-size:22px;
-    }
+    .panel h2{margin:0 0 6px;font-size:20px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.4px;}
+    .panel h3{margin:0 0 10px;font-size:17px;font-family:'Rajdhani',sans-serif;font-weight:600;}
 
-    .muted{
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.55;
-    }
+    .muted{color:var(--muted);font-size:13px;line-height:1.6;}
 
-    .kpis{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:12px;
-    }
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
 
     .kpi{
       background:var(--panel2);
-      border:1px solid #233764;
+      border:1px solid #1e3060;
       border-radius:18px;
-      padding:14px;
+      padding:16px;
+      position:relative;
+      overflow:hidden;
+      transition:.22s;
     }
 
-    .kpi .value{
-      margin-top:8px;
-      font-size:30px;
-      font-weight:900;
+    .kpi:hover{border-color:#3a5aaa;transform:translateY(-2px);}
+
+    .kpi::before{
+      content:"";
+      position:absolute;
+      top:-18px;right:-18px;
+      width:60px;height:60px;
+      border-radius:50%;
+      background:var(--kpi-color,var(--blue));
+      filter:blur(22px);
+      opacity:.18;
     }
 
-    .input,.textarea,.btn,.file-input{
-      width:100%;
-      padding:13px;
-      border-radius:12px;
-      border:none;
-      margin-top:10px;
-    }
+    .kpi .label{color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;}
+    .kpi .value{margin-top:10px;font-size:32px;font-weight:900;font-family:'Rajdhani',sans-serif;letter-spacing:-.5px;}
+    .kpi .sub{margin-top:4px;font-size:11px;color:var(--muted);}
 
+    /* Inputs */
     .input,.textarea,.file-input{
-      background:#0c152f;
+      width:100%;padding:13px 14px;
+      border-radius:12px;
+      background:#08111f;
       color:var(--text);
-      border:1px solid #2a3f77;
+      border:1px solid #1e3060;
+      font-size:13px;
+      font-family:'Inter',sans-serif;
+      transition:.2s;
+      outline:none;
+      margin-top:10px;
+      display:block;
     }
 
-    .textarea{
-      min-height:120px;
-    }
+    .input:focus,.textarea:focus{border-color:#4a6acd;box-shadow:0 0 0 3px rgba(90,124,255,.12);}
+
+    .textarea{min-height:110px;resize:vertical;}
+
+    label{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-top:14px;display:block;}
+    label:first-child{margin-top:0;}
 
     .btn{
+      display:inline-block;
+      width:100%;
+      padding:13px 16px;
+      border-radius:12px;
+      border:none;
       cursor:pointer;
       color:white;
       font-weight:800;
+      font-size:13px;
+      font-family:'Inter',sans-serif;
       background:linear-gradient(90deg,var(--blue),var(--purple));
+      margin-top:12px;
+      transition:.22s;
+      letter-spacing:.3px;
+      box-shadow:0 4px 18px rgba(90,124,255,.3);
     }
+
+    .btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(90,124,255,.4);}
+    .btn:active{transform:translateY(0);}
+    .btn.secondary{background:#141e3c;border:1px solid #2a3f77;box-shadow:none;}
+    .btn.secondary:hover{background:#1b2a52;}
+    .btn.success{background:linear-gradient(90deg,#176b42,#22aa65);box-shadow:0 4px 18px rgba(34,170,101,.28);}
+    .btn.danger{background:linear-gradient(90deg,#7a2536,#c03050);box-shadow:0 4px 18px rgba(192,48,80,.25);}
+    .btn.warn{background:linear-gradient(90deg,#7a4e18,#c07828);box-shadow:0 4px 18px rgba(192,120,40,.25);}
+    .btn.sm{padding:8px 14px;font-size:12px;width:auto;margin-top:0;}
+    .btn.cyan{background:linear-gradient(90deg,#0e6b80,#18b8d8);box-shadow:0 4px 18px rgba(24,184,216,.25);}
+    .btn-row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;}
+    .btn-row .btn{flex:1;margin-top:0;}
+
+    /* Task Cards */
+    .task-list{display:grid;gap:12px;}
 
     .task-card{
-      background:#0f1a3a;
-      border:1px solid #223a72;
-      padding:14px;
-      border-radius:16px;
-      margin-top:12px;
+      background:#090f22;
+      border:1px solid #1a2e5a;
+      padding:16px;
+      border-radius:18px;
+      transition:.2s;
+      position:relative;
+      overflow:hidden;
     }
 
-    .chips{
-      display:flex;
-      gap:6px;
-      flex-wrap:wrap;
-      margin-top:8px;
+    .task-card:hover{border-color:#2e4a8a;transform:translateY(-1px);}
+
+    .task-card::before{
+      content:"";
+      position:absolute;
+      left:0;top:0;bottom:0;
+      width:3px;
+      border-radius:3px 0 0 3px;
+      background:var(--accent,var(--blue));
     }
+
+    .task-title{font-size:15px;font-weight:800;padding-left:4px;}
+
+    .task-desc{
+      margin-top:8px;
+      line-height:1.6;
+      color:#c5d3ec;
+      font-size:13px;
+      padding-left:4px;
+    }
+
+    .task-meta{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:11px;
+      display:flex;gap:14px;flex-wrap:wrap;
+      padding-left:4px;
+    }
+
+    .task-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+
+    .task-actions .btn{
+      flex:1;
+      margin-top:0;
+      min-width:110px;
+    }
+
+    /* Chips */
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
 
     .chip{
-      padding:5px 9px;
-      border-radius:14px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:5px 10px;
+      border-radius:20px;
       font-size:11px;
+      font-weight:700;
       border:1px solid;
+      letter-spacing:.3px;
     }
 
-    .chairman{color:var(--chairman);border-color:var(--chairman)}
-    .cto{color:var(--cto);border-color:var(--cto)}
-    .builder{color:var(--builder);border-color:var(--builder)}
-    .automation{color:var(--automation);border-color:var(--automation)}
-    .qa{color:var(--qa);border-color:var(--qa)}
+    .dot{
+      width:7px;height:7px;
+      border-radius:50%;
+      display:inline-block;
+      box-shadow:0 0 10px currentColor;
+    }
 
+    .chairman{color:var(--chairman);border-color:rgba(255,215,110,.4);background:rgba(255,215,110,.07);}
+    .cto{color:var(--cto);border-color:rgba(127,176,255,.4);background:rgba(127,176,255,.07);}
+    .cmo{color:var(--cmo);border-color:rgba(255,138,216,.4);background:rgba(255,138,216,.07);}
+    .hr{color:var(--hr);border-color:rgba(114,233,255,.4);background:rgba(114,233,255,.07);}
+    .ds{color:var(--ds);border-color:rgba(184,148,255,.4);background:rgba(184,148,255,.07);}
+    .de{color:var(--de);border-color:rgba(94,240,178,.4);background:rgba(94,240,178,.07);}
+    .ml{color:var(--ml);border-color:rgba(154,124,255,.4);background:rgba(154,124,255,.07);}
+    .builder{color:var(--builder);border-color:rgba(255,176,99,.4);background:rgba(255,176,99,.07);}
+    .automation{color:var(--automation);border-color:rgba(109,255,151,.4);background:rgba(109,255,151,.07);}
+    .qa{color:var(--qa);border-color:rgba(244,247,255,.3);background:rgba(244,247,255,.05);}
+    .operations{color:var(--operations);border-color:rgba(255,201,106,.4);background:rgba(255,201,106,.07);}
+    .security{color:var(--security);border-color:rgba(255,123,139,.4);background:rgba(255,123,139,.07);}
+    .summary{color:var(--summary);border-color:rgba(207,216,234,.3);background:rgba(207,216,234,.05);}
+
+    /* Agent Grid */
+    .agent-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+
+    .agent-card{
+      background:var(--panel2);
+      border:1px solid #1e3060;
+      border-radius:18px;
+      padding:16px;
+      position:relative;
+      overflow:hidden;
+      transition:.22s;
+    }
+
+    .agent-card:hover{border-color:#3a5aaa;transform:translateY(-2px);}
+
+    .agent-card::after{
+      content:"";
+      position:absolute;
+      inset:auto -16px -16px auto;
+      width:86px;height:86px;
+      border-radius:50%;
+      background:currentColor;
+      filter:blur(28px);
+      opacity:.10;
+      pointer-events:none;
+    }
+
+    .agent-avatar{
+      width:42px;height:42px;
+      border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:20px;
+      margin-bottom:10px;
+      border:1px solid rgba(255,255,255,.1);
+    }
+
+    .agent-name{font-size:15px;font-weight:800;margin-bottom:3px;}
+    .agent-dept{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+    .agent-role{font-size:12px;line-height:1.6;color:#c5d3ec;}
+
+    .agent-status{
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      font-size:10px;
+      font-weight:700;
+      padding:3px 8px;
+      border-radius:20px;
+      margin-top:10px;
+      background:rgba(40,215,122,.1);
+      color:var(--green);
+      border:1px solid rgba(40,215,122,.25);
+    }
+
+    /* Right Panel */
+    .right{padding:18px 18px 18px 0;}
+
+    .viewer{
+      background:var(--panel2);
+      border-radius:20px;
+      border:1px solid var(--line);
+      padding:18px;
+      height:calc(100vh - 36px);
+      overflow-y:auto;
+      position:sticky;
+      top:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .viewer::-webkit-scrollbar{width:5px;}
+    .viewer::-webkit-scrollbar-track{background:transparent;}
+    .viewer::-webkit-scrollbar-thumb{background:#2a3a66;border-radius:4px;}
+
+    .viewer h2{margin:0 0 6px;font-size:20px;font-family:'Rajdhani',sans-serif;font-weight:700;}
+
+    .viewer-sub{color:var(--muted);font-size:12px;line-height:1.6;margin-bottom:12px;}
+
+    .section{
+      margin-top:12px;
+      background:#080f1f;
+      border:1px solid #1a2b50;
+      border-radius:14px;
+      padding:14px;
+    }
+
+    .section-title{
+      font-size:12px;font-weight:800;
+      margin-bottom:10px;
+      display:flex;align-items:center;gap:8px;
+      color:var(--muted);
+      letter-spacing:.8px;
+      text-transform:uppercase;
+    }
+
+    .section-body{
+      white-space:pre-wrap;
+      line-height:1.65;
+      font-size:13px;
+      color:#d5e3ff;
+    }
+
+    .empty{color:var(--muted);font-size:13px;line-height:1.7;text-align:center;padding:24px 0;}
+
+    /* File Cards */
+    .file-list{display:grid;gap:10px;}
+
+    .file-card{
+      background:#080f1f;
+      border:1px solid #1a2b50;
+      border-radius:14px;
+      padding:14px;
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      transition:.2s;
+    }
+
+    .file-card:hover{border-color:#2e4a8a;}
+
+    .file-icon{
+      width:38px;height:38px;
+      border-radius:10px;
+      background:rgba(90,124,255,.15);
+      border:1px solid rgba(90,124,255,.25);
+      display:flex;align-items:center;justify-content:center;
+      font-size:18px;
+      flex-shrink:0;
+    }
+
+    .file-info{flex:1;}
+    .file-name{font-weight:800;font-size:13px;margin-bottom:4px;}
+    .file-meta{font-size:11px;color:var(--muted);}
+
+    .status-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+
+    .status-pill{
+      padding:7px 12px;
+      border-radius:999px;
+      font-size:11px;font-weight:700;
+      border:1px solid var(--line);
+      color:var(--muted);
+      background:rgba(255,255,255,.04);
+    }
+
+    /* Progress bar */
+    .progress-bar{
+      height:6px;
+      border-radius:4px;
+      background:#1a2b50;
+      margin-top:10px;
+      overflow:hidden;
+    }
+
+    .progress-fill{
+      height:100%;
+      border-radius:4px;
+      background:linear-gradient(90deg,var(--blue),var(--cyan));
+      transition:width .6s ease;
+    }
+
+    /* Timeline */
+    .timeline{display:grid;gap:0;}
+
+    .tl-item{
+      display:flex;
+      gap:12px;
+      padding-bottom:16px;
+      position:relative;
+    }
+
+    .tl-item::before{
+      content:"";
+      position:absolute;
+      left:14px;top:28px;bottom:0;
+      width:1px;
+      background:var(--line);
+    }
+
+    .tl-item:last-child::before{display:none;}
+
+    .tl-dot{
+      width:28px;height:28px;flex-shrink:0;
+      border-radius:50%;
+      border:2px solid;
+      display:flex;align-items:center;justify-content:center;
+      font-size:12px;
+      background:var(--bg2);
+    }
+
+    .tl-content{flex:1;padding-top:3px;}
+    .tl-title{font-size:13px;font-weight:700;margin-bottom:3px;}
+    .tl-time{font-size:11px;color:var(--muted);}
+
+    /* Badge */
+    .badge{
+      display:inline-block;
+      padding:3px 8px;
+      border-radius:6px;
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:.5px;
+      text-transform:uppercase;
+    }
+
+    .badge.running{background:rgba(40,215,122,.15);color:var(--green);border:1px solid rgba(40,215,122,.3);}
+    .badge.pending{background:rgba(255,157,61,.12);color:var(--orange);border:1px solid rgba(255,157,61,.28);}
+    .badge.done{background:rgba(90,124,255,.12);color:#8aabff;border:1px solid rgba(90,124,255,.28);}
+    .badge.failed{background:rgba(255,92,106,.12);color:var(--red);border:1px solid rgba(255,92,106,.28);}
+
+    /* Toast */
+    #toast{
+      position:fixed;bottom:28px;right:28px;
+      background:rgba(10,20,46,.96);
+      border:1px solid var(--line2);
+      color:var(--text);
+      padding:13px 18px;
+      border-radius:14px;
+      font-size:13px;
+      font-weight:600;
+      box-shadow:0 8px 30px rgba(0,0,0,.5);
+      z-index:999;
+      transform:translateY(80px);
+      opacity:0;
+      transition:.3s;
+      max-width:320px;
+      backdrop-filter:blur(12px);
+    }
+
+    #toast.show{transform:translateY(0);opacity:1;}
+
+    /* Scrollbar global */
+    ::-webkit-scrollbar{width:6px;}
+    ::-webkit-scrollbar-track{background:transparent;}
+    ::-webkit-scrollbar-thumb{background:#1e2f5a;border-radius:4px;}
+
+    /* Modal */
+    .modal-overlay{
+      position:fixed;inset:0;
+      background:rgba(4,8,20,.8);
+      backdrop-filter:blur(6px);
+      z-index:100;
+      display:none;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .modal-overlay.open{display:flex;}
+
+    .modal{
+      background:#0c1428;
+      border:1px solid var(--line2);
+      border-radius:24px;
+      padding:26px;
+      width:90%;
+      max-width:480px;
+      box-shadow:0 30px 80px rgba(0,0,0,.6);
+      animation:fadeIn .2s ease;
+    }
+
+    .modal h3{font-size:18px;font-family:'Rajdhani',sans-serif;font-weight:700;margin-bottom:8px;}
+
+    /* Responsive */
+    @media (max-width:1250px){
+      .app{grid-template-columns:250px 1fr;}
+      .right{grid-column:1/-1;padding:0 18px 18px;}
+      .viewer{position:relative;top:0;height:auto;min-height:400px;}
+    }
+
+    @media (max-width:900px){
+      .app{grid-template-columns:1fr;}
+      .sidebar{position:relative;height:auto;}
+      .kpis{grid-template-columns:1fr 1fr;}
+      .agent-grid{grid-template-columns:1fr;}
+      .grid2,.grid3{grid-template-columns:1fr;}
+    }
+
+    @media (max-width:600px){
+      .kpis{grid-template-columns:1fr;}
+      .topbar{flex-direction:column;align-items:flex-start;}
+    }
   </style>
 </head>
-
 <body>
 
 <div class="app">
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
+  <!-- \u2550\u2550 SIDEBAR \u2550\u2550 -->
+  <aside class="sidebar">
     <div class="brand">
-      <div class="brand-title">ORCHEGENTRA</div>
-      <div class="brand-sub">AI OS</div>
-    </div>
-
-    <div class="nav">
-      <button onclick="showPage('home')">Home</button>
-      <button onclick="showPage('command')">Command</button>
-      <button onclick="showPage('agents')">Agents</button>
-      <button onclick="showPage('workspace')">Workspace</button>
-      <button onclick="showPage('ongoing')">Ongoing</button>
-      <button onclick="showPage('completed')">Completed</button>
-      <button onclick="showPage('output')">Output</button>
-      <button onclick="showPage('files')">Files</button>
-      <button onclick="showPage('settings')">Settings</button>
-    </div>
-  </div>
-
-  <!-- MAIN -->
-  <div class="main">
-
-    <div class="topbar">
-      <h1>AI Command Center</h1>
-    </div>
-
-    <!-- HOME -->
-    <div id="home" class="page active panel">
-      <h2>Home</h2>
-      <p class="muted">Welcome to ORCHEGENTRA AI</p>
-    </div>
-
-    <!-- COMMAND -->
-    <div id="command" class="page panel">
-      <h2>Create Task</h2>
-      <input id="title" class="input" placeholder="Title">
-      <textarea id="desc" class="textarea" placeholder="Description"></textarea>
-      <button class="btn" onclick="createTask()">Create</button>
-    </div>
-
-    <!-- ONGOING -->
-    <div id="ongoing" class="page panel">
-      <h2>Ongoing Tasks</h2>
-      <div id="taskList"></div>
-    </div>
-
-    <!-- OUTPUT -->
-    <div id="output" class="page panel">
-      <h2>Output</h2>
-      <div id="outputBox">No output yet</div>
-    </div>
-
-  </div>
-</div>
-
-<script>
-
-let tasks = []
-
-function showPage(id){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
-  document.getElementById(id).classList.add("active")
-}
-
-function createTask(){
-  const title = document.getElementById("title").value
-  const desc = document.getElementById("desc").value
-
-  const task = {
-    id: Date.now(),
-    title,
-    desc
-  }
-
-  tasks.push(task)
-  renderTasks()
-}
-
-function renderTasks(){
-  const list = document.getElementById("taskList")
-  list.innerHTML = tasks.map(t=>`
-    <div class="task-card">
-      <b>${t.title}</b>
-      <p>${t.desc}</p>
-      <div class="chips">
-        <span class="chip chairman">Chairman</span>
-        <span class="chip cto">CTO</span>
-        <span class="chip builder">Builder</span>
-        <span class="chip automation">Automation</span>
-        <span class="chip qa">QA</span>
+      <div class="brand-logo">
+        <div class="brand-icon">\ud83e\udde0</div>
+        <div>
+          <div class="brand-title">ORCHEGENTRA</div>
+          <div class="brand-sub">AI Operating System</div>
+        </div>
       </div>
-      <button onclick="runTask(${t.id})">Run</button>
     </div>
-  `).join("")
-}
 
-function runTask(id){
-  document.getElementById("outputBox").innerText =
-    "Multi-agent execution completed for task " + id
-}
+    <nav class="nav">
+      <button class="home active" onclick="navigate('home',this)">
+        <span class="nav-icon">\ud83c\udfe0</span> Dashboard
+      </button>
+      <button class="command" onclick="navigate('command',this)">
+        <span class="nav-icon">\u26a1</span> Command Center
+      </button>
+      <div class="nav-divider"></div>
+      <button class="agents" onclick="navigate('agents',this)">
+        <span class="nav-icon">\ud83e\udd16</span> AI Agents
+      </button>
+      <button class="workspace" onclick="navigate('workspace',this)">
+        <span class="nav-icon">\ud83d\uddc2</span> Workspace
+      </button>
+      <div class="nav-divider"></div>
+      <button class="ongoing" onclick="navigate('ongoing',this)">
+        <span class="nav-icon">\ud83d\udd04</span> Ongoing Tasks
+      </button>
+      <button class="completed" onclick="navigate('completed',this)">
+        <span class="nav-icon">\u2705</span> Completed
+      </button>
+      <button class="output" onclick="navigate('output',this)">
+        <span class="nav-icon">\ud83d\udce4</span> Output Log
+      </button>
+      <div class="nav-divider"></div>
+      <button class="files" onclick="navigate('files',this)">
+        <span class="nav-icon">\ud83d\udcc1</span> Files & Assets
+      </button>
+      <button class="settings" onclick="navigate('settings',this)">
+        <span class="nav-icon">\u2699\ufe0f</span> Settings
+      </button>
+    </nav>
 
-</script>
+    <div class="side-status">
+      <div class="side-box">
+        <div style="margin-bottom:8px"><span class="online-dot"></span><strong>System Online</strong></div>
+        <div>Active Agents: <strong style="color:var(--cyan)">12 / 12</strong></div>
+        <div style="margin-top:4px">Tasks Running: <strong style="color:var(--green)">5</strong></div>
+        <div style="margin-top:4px">Queue: <strong style="color:var(--orange)">8 pending</strong></div>
+        <div class="progress-bar" style="margin-top:10px">
+          <div class="progress-fill" style="width:72%"></div>
+        </div>
+        <div style="margin-top:6px;font-size:11px">CPU Load: 72%</div>
+      </div>
+    </div>
+  </aside>
 
-</body>
-</html>
+  <!-- \u2550\u2550 MAIN CONTENT \u2550\u2550 -->
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div>
+        <h1 id="page-title">\ud83c\udfe0 Dashboard</h1>
+        <p id="page-desc">Overview of your AI orchestration system</p>
+      </div>
+      <div class="topbar-tags">
+        <span class="tag green">\u25cf Live</span>
+        <span class="tag blue">v2.4.1</span>
+        <span class="tag orange" id="clock">--:--</span>
+      </div>
+    </div>
+
+    <!-- \u2500\u2500 PAGE: HOME \u2500\u2500 -->
+    <div class="page active" id="page-home">
+      <div class="panel hero">
+        <h2>Welcome back, Commander \ud83d\udc4b</h2>
+        <p class="muted">Your AI workforce is fully operational. 12 agents active, 5 tasks running, 8 queued.</p>
+        <div class="chips" style="margin-top:14px">
+          <span class="chip chairman"><span class="dot" style="background:var(--chairman)"></span>Chairman AI</span>
+          <span class="chip cto"><span class="dot" style="background:var(--cto)"></span>CTO Agent</span>
+          <span class="chip cmo"><span class="dot" style="background:var(--cmo)"></span>CMO Agent</span>
+          <span class="chip de"><span class="dot" style="background:var(--de)"></span>Dev Engineer</span>
+          <span class="chip automation"><span class="dot" style="background:var(--automation)"></span>Automation</span>
+          <span class="chip security"><span class="dot" style="background:var(--security)"></span>Security</span>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi" style="--kpi-color:var(--cyan)">
+          <div class="label">Total Tasks</div>
+          <div class="value" style="color:var(--cyan)">247</div>
+          <div class="sub">\u2191 18 this week</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--green)">
+          <div class="label">Completed</div>
+          <div class="value" style="color:var(--green)">189</div>
+          <div class="sub">76.5% success rate</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--orange)">
+          <div class="label">In Progress</div>
+          <div class="value" style="color:var(--orange)">5</div>
+          <div class="sub">Avg 2.4h each</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--purple)">
+          <div class="label">Active Agents</div>
+          <div class="value" style="color:var(--purple)">12</div>
+          <div class="sub">100% uptime</div>
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-top:16px">
+        <div class="panel">
+          <h3>\u26a1 Quick Actions</h3>
+          <button class="btn" onclick="navigate('command', document.querySelector('.nav .command'))">
+            + Dispatch New Task
+          </button>
+          <button class="btn secondary" style="margin-top:8px" onclick="navigate('agents', document.querySelector('.nav .agents'))">
+            View All Agents
+          </button>
+          <button class="btn secondary" style="margin-top:8px" onclick="navigate('files', document.querySelector('.nav .files'))">
+            Upload Files
+          </button>
+        </div>
+
+        <div class="panel">
+          <h3>\ud83d\udcca System Health</h3>
+          <div style="margin-top:6px">
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px">
+              <span>Agent Network</span><span style="color:var(--green)">100%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:100%;background:linear-gradient(90deg,var(--green),#1aff88)"></div></div>
+          </div>
+          <div style="margin-top:12px">
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px">
+              <span>Task Queue</span><span style="color:var(--orange)">72%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div>
+          </div>
+          <div style="margin-top:12px">
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px">
+              <span>Memory Usage</span><span style="color:var(--cyan)">58%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:58%;background:linear-gradient(90deg,var(--cyan),#1aefff)"></div></div>
+          </div>
+          <div style="margin-top:12px">
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px">
+              <span>Storage</span><span style="color:var(--purple)">41%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:41%;background:linear-gradient(90deg,var(--purple),#bf8fff)"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>\ud83d\udd50 Recent Activity</h3>
+        <div class="timeline" style="margin-top:10px">
+          <div class="tl-item">
+            <div class="tl-dot" style="border-color:var(--green);color:var(--green)">\u2713</div>
+            <div class="tl-content">
+              <div class="tl-title">Market analysis report generated <span class="badge done" style="margin-left:6px">Done</span></div>
+              <div class="tl-time">CMO Agent \u2022 12 min ago</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="border-color:var(--orange);color:var(--orange)">\u27f3</div>
+            <div class="tl-content">
+              <div class="tl-title">Backend API refactor in progress <span class="badge running" style="margin-left:6px">Running</span></div>
+              <div class="tl-time">CTO Agent + Dev Engineer \u2022 34 min ago</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="border-color:var(--cyan);color:var(--cyan)">\u2605</div>
+            <div class="tl-content">
+              <div class="tl-title">Security audit completed <span class="badge done" style="margin-left:6px">Done</span></div>
+              <div class="tl-time">Security Agent \u2022 1h ago</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="border-color:var(--blue);color:var(--blue)">\u25c8</div>
+            <div class="tl-content">
+              <div class="tl-title">ML model training queued <span class="badge pending" style="margin-left:6px">Pending</span></div>
+              <div class="tl-time">ML Agent \u2022 2h ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- \u2500\u2500 PAGE: COMMAND \u2500\u2500 -->
+    <div class="page" id="page-command">
+      <div class="panel hero">
+        <h2>\u26a1 Command Center</h2>
+        <p class="muted">Dispatch tasks to your AI agents. Describe what you need \u2014 the system will assign the optimal agent chain.</p>
+      </div>
+
+      <div class="grid2">
+        <div class="panel">
+          <h3>\ud83d\ude80 Dispatch Task</h3>
+          <label>Task Title</label>
+          <input class="input" id="task-title" placeholder="e.g. Build a landing page for Product X" />
+          <label>Description</label>
+          <textarea class="textarea" id="task-desc" placeholder="Describe the task in detail. Include goals, constraints, and deliverables..."></textarea>
+          <label>Priority</label>
+          <select class="input" id="task-priority" style="cursor:pointer">
+            <option value="high">\ud83d\udd34 High Priority</option>
+            <option value="medium" selected>\ud83d\udfe1 Medium Priority</option>
+            <option value="low">\ud83d\udfe2 Low Priority</option>
+          </select>
+          <label>Assign To</label>
+          <select class="input" id="task-agent" style="cursor:pointer">
+            <option value="auto">\ud83e\udd16 Auto-assign (Recommended)</option>
+            <option value="chairman">\ud83d\udc51 Chairman AI</option>
+            <option value="cto">\ud83d\udcbb CTO Agent</option>
+            <option value="cmo">\ud83d\udce3 CMO Agent</option>
+            <option value="de">\ud83d\udd27 Dev Engineer</option>
+            <option value="ml">\ud83e\uddec ML Agent</option>
+            <option value="automation">\u2699\ufe0f Automation Agent</option>
+            <option value="security">\ud83d\udd10 Security Agent</option>
+          </select>
+          <button class="btn" onclick="dispatchTask()">\u26a1 Dispatch Task</button>
+          <button class="btn secondary" onclick="clearForm()">Clear Form</button>
+        </div>
+
+        <div class="panel">
+          <h3>\ud83d\udccb Task Queue <span class="badge pending" style="margin-left:6px">8 Pending</span></h3>
+          <div class="task-list" style="margin-top:12px" id="queue-list">
+            <div class="task-card" style="--accent:var(--orange)">
+              <div class="task-title">ML Model Retraining</div>
+              <div class="task-desc">Retrain sentiment analysis model with new Q4 data corpus.</div>
+              <div class="task-meta"><span>\ud83d\udfe1 Medium</span><span>ML Agent</span></div>
+              <div class="task-actions">
+                <button class="btn sm success" onclick="startTask(this)">\u25b6 Start</button>
+                <button class="btn sm danger" onclick="removeTask(this)">\u2715 Remove</button>
+              </div>
+            </div>
+            <div class="task-card" style="--accent:var(--red)">
+              <div class="task-title">Database Migration Script</div>
+              <div class="task-desc">Write and test PostgreSQL migration from v13 to v16.</div>
+              <div class="task-meta"><span>\ud83d\udd34 High</span><span>Dev Engineer</span></div>
+              <div class="task-actions">
+                <button class="btn sm success" onclick="startTask(this)">\u25b6 Start</button>
+                <button class="btn sm danger" onclick="removeTask(this)">\u2715 Remove</button>
+              </div>
+            </div>
+            <div class="task-card" style="--accent:var(--blue)">
+              <div class="task-title">Social Media Strategy</div>
+              <div class="task-desc">Create a 30-day content calendar for all platforms.</div>
+              <div class="task-meta"><span>\ud83d\udfe2 Low</span><span>CMO Agent</span></div>
+              <div class="task-actions">
+                <button class="btn sm success" onclick="startTask(this)">\u25b6 Start</button>
+                <button class="btn sm danger" onclick="removeTask(this)">\u2715 Remove</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- \u2500\u2500 PAGE: AGENTS \u2500\u2500 -->
+    <div class="page" id="page-agents">
+      <div class="panel hero">
+        <h2>\ud83e\udd16 AI Agent Roster</h2>
+        <p class="muted">12 specialized agents forming your intelligent workforce. Each agent has defined expertise, access, and authority.</p>
+      </div>
+
+      <div class="agent-grid">
+        <div class="agent-card chairman">
+          <div class="agent-avatar" style="background:rgba(255,215,110,.12);border-color:rgba(255,215,110,.3)">\ud83d\udc51</div>
+          <div class="agent-name" style="color:var(--chairman)">Chairman AI</div>
+          <div class="agent-dept">Executive Leadership</div>
+          <div class="agent-role">Strategic oversight, goal-setting, and final decision authority. Delegates tasks across all departments and synthesizes system-wide outputs.</div>
+          <div class="agent-status"><span class="dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></span>Active</div>
+        </div>
+
+        <div class="agent-card cto">
+          <div class="agent-avatar" style="background:rgba(127,176,255,.12);border-color:rgba(127,176,255,.3)">\ud83d\udcbb</div>
+          <div class="agent-name" style="color:var(--cto)">CTO Agent</div>
+          <div class="agent-dept">Technology</div>
+          <div class="agent-role">Architecture decisions, tech stack selection, code review standards, and engineering team coordination. Owns all technical deliverables.</div>
+          <div class="agent-status"><span class="dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></span>Active</div>
+        </div>
+
+        <div class="agent-card cmo">
+          <div class="agent-avatar" style="background:rgba(255,138,216,.12);border-color:rgba(255,138,216,.3)">\ud83d\udce3</div>
+          <div class="agent-name" style="color:var(--cmo)">CMO Agent</div>
+          <div class="agent-dept">Marketing</div>
+          <div class="agent-role">Brand strategy, content creation, campaign management, and market research. Drives growth and customer engagement across all channels.</div>
+          <div class="agent-status"><span class="dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></span>Active</div>
+        </div>
+
+        <div class="agent-card hr">
+          <div class="agent-avatar" style="background:rgba(114,233,255,.12);border-color:rgba(114,233,255,.3)">\ud83d\udc65</div>
+          <div class="agent-name" style="color:var(--hr)">HR Agent</div>
+          <div class="agent-dept">Human Resources</div>
+          <div class="agent-role">Talent management, onboarding workflows, performance tracking, and internal culture initiatives. Manages agent performance metrics.</div>
+          <div class="agent-status"><span class="dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></span>Active</div>
+        </div>
+
+        <div class="agent-card ds">
+          <div class="agent-avatar" style="background:rgba(184,148,255,.12);border-color:rgba(184,148,255,.3)">\ud83d\udcca</div>
+          <div class="agent-name" style="color:var(--ds)">Data Scientist</div>
+          <div class="agent-dept">Analytics</div>
+          <div class="agent-role">Statistical modeling, data pipeline design, A/B testing frameworks, and insight generation from structured and unstructured data.</div>
+          <div class="agent-status"><span class="dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></span>Active</div>
+        </div>
+
+        <div class="agent-card de">
+          <div class="agent-avatar" style="background:rgba(94,240,178,.12);border-color:rgba(94,240,178,.3)">\ud83d\udd27</div>
+          <div class="agent-name" style="color:var(--de)">Dev Engineer</div>
+          <div class="agent-dept">Engineering</div>
+          <div class="agent-role">Full-stack development, API integration, debugging, and deployment. Primary executor of all coding tasks across frontend and backend.</div>
+          <div class="agent-status"><span class="dot" style="background:var(--orange);box-shadow:0 0 6px var(--orange)"></span>Busy</div>
+        </div>
+
+        <div class="agent-card ml">
+          <div class="agent-avatar" style="background:rgba(154,124,255,.12);border-color:rgba(154,124,255,.3)">\ud83e\uddec</div>
+          <div class="agent-name" style="color:var(--ml)">ML Agent</div>
+          <div class="agent-dept">Machine Learning</div>
+          <div class="agent-role">Model training, fine-tuning, evaluation, and deployment. Specializes in NLP, computer vision, and reinforcement learning pipelines.</div>
+          <div class="agent-status"><span class="dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></span>Active</div>
+        </div>
+
+        <div class="agent-card builder">
+          <div class="agent-avatar" style="background:rgba(255,176,99,.12);border-color:rgba(255,176,99,.3)">\ud83c\udfd7\ufe0f</div>
+          <div class="agent-name" style="color:var(--builder)">Builder Agent</div>
+          <div class="agent-dept">Product</div>
+          <div class="agent-role">Rapid prototyping, MVP development, UI scaffolding, and feature implementation. Bridges design concepts and working software.</div>
+          <div class="agent-status"><span class="dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></span>Active</div>
+        </div>
+
+        <div class="agent-card automation">
+          <div class="agent-avatar" style="background:rgba(109,255,151,.12);border-color:rgba(109,255,151,.3)">\u2699\ufe0f</div>
+          <div class="agent-name" style="color:var(--automation)">Automation Agent</div>
+          <div class="agent-dept">Operations</div>
+          <div class="agent-role">Workflow automation, scheduled tasks, integrations, and process optimization. Runs background pipelines and event-driven triggers.</div>
+          <div class="agent-status"><span class="dot" style="background:var(--orange);box-shadow:0 0 6px var(--orange)"></span>Busy</div>
+        </div>
+
+        <div class="agent-card qa">
+          <div class="agent-avatar" style="background:rgba(244,247,255,.08);border-color:rgba(244,247,255,.2)">\ud83d\udd0d</div>
+          <div class="agent-name" style="color:var(--qa)">QA Agent</div>
+          <div class="agent-dept">Quality Assurance</div>
+          <div class="agent-role">Test suite design, regression testing, bug tracking, and release validation. Ensures all outputs meet defined quality standards.</div>
+          <div class="agent-status"><span class="dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></span>Active</div>
+        </div>
+
+        <div class="agent-card operations">
+          <div class="agent-avatar" style="background:rgba(255,201,106,.12);border-color:rgba(255,201,106,.3)">\ud83d\udce6</div>
+          <div class="agent-name" style="color:var(--operations)">Operations Agent</div>
+          <div class="agent-dept">Operations</div>
+          <div class="agent-role">Resource allocation, task scheduling, system monitoring, and cross-agent coordination. Maintains operational efficiency and uptime.</div>
+          <div class="agent-status"><span class="dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></span>Active</div>
+        </div>
+
+        <div class="agent-card security">
+          <div class="agent-avatar" style="background:rgba(255,123,139,.12);border-color:rgba(255,123,139,.3)">\ud83d\udd10</div>
+          <div class="agent-name" style="color:var(--security)">Security Agent</div>
+          <div class="agent-dept">Security</div>
+          <div class="agent-role">Threat detection, vulnerability scanning, compliance auditing, and access control. Guards all system assets and communications.</div>
+          <div class="agent-status"><span class="dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></span>Active</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- \u2500\u2500 PAGE: WORKSPACE \u2500\u2500 -->
+    <div class="page" id="page-workspace">
+      <div class="panel hero">
+        <h2>\ud83d\uddc2 Workspace</h2>
+        <p class="muted">Manage active projects, shared context, and multi-agent collaboration zones.</p>
+      </div>
+
+      <div class="grid2">
+        <div class="panel">
+          <h3>\ud83c\udd95 Create Project</h3>
+          <label>Project Name</label>
+          <input class="input" id="proj-name" placeholder="e.g. Product Launch Q1 2025" />
+          <label>Objective</label>
+          <textarea class="textarea" id="proj-obj" placeholder="What should this project accomplish?" style="min-height:80px"></textarea>
+          <label>Agents Involved</label>
+          <div class="chips" id="agent-toggles" style="margin-top:10px;gap:8px">
+            <span class="chip chairman" style="cursor:pointer" onclick="toggleAgent(this)"><span class="dot" style="background:var(--chairman)"></span>Chairman</span>
+            <span class="chip cto" style="cursor:pointer" onclick="toggleAgent(this)"><span class="dot" style="background:var(--cto)"></span>CTO</span>
+            <span class="chip cmo" style="cursor:pointer" onclick="toggleAgent(this)"><span class="dot" style="background:var(--cmo)"></span>CMO</span>
+            <span class="chip de" style="cursor:pointer" onclick="toggleAgent(this)"><span class="dot" style="background:var(--de)"></span>Dev Eng</span>
+            <span class="chip ml" style="cursor:pointer" onclick="toggleAgent(this)"><span class="dot" style="background:var(--ml)"></span>ML</span>
+            <span class="chip automation" style="cursor:pointer" onclick="toggleAgent(this)"><span class="dot" style="background:var(--automation)"></span>Automation</span>
+            <span class="chip security" style="cursor:pointer" onclick="toggleAgent(this)"><span class="dot" style="background:var(--security)"></span>Security</span>
+            <span class="chip qa" style="cursor:pointer" onclick="toggleAgent(this)"><span class="dot" style="background:var(--qa)"></span>QA</span>
+          </div>
+          <button class="btn" onclick="createProject()">\ud83d\uddc2 Create Project</button>
+        </div>
+
+        <div class="panel">
+          <h3>\ud83d\udcc2 Active Projects</h3>
+          <div class="task-list" id="project-list" style="margin-top:8px">
+            <div class="task-card" style="--accent:var(--cyan)">
+              <div class="task-title">Platform Redesign v3</div>
+              <div class="task-desc">Full UI/UX overhaul with new design system and component library.</div>
+              <div class="chips" style="margin-top:8px">
+                <span class="chip cto" style="font-size:10px">CTO</span>
+                <span class="chip de" style="font-size:10px">Dev Eng</span>
+                <span class="chip builder" style="font-size:10px">Builder</span>
+                <span class="chip qa" style="font-size:10px">QA</span>
+              </div>
+              <div class="progress-bar" style="margin-top:10px"><div class="progress-fill" style="width:62%"></div></div>
+              <div class="task-meta"><span>62% complete</span><span>Started 3 days ago</span></div>
+            </div>
+            <div class="task-card" style="--accent:var(--green)">
+              <div class="task-title">Q1 Marketing Campaign</div>
+              <div class="task-desc">Multi-channel campaign for new product release targeting enterprise clients.</div>
+              <div class="chips" style="margin-top:8px">
+                <span class="chip cmo" style="font-size:10px">CMO</span>
+                <span class="chip ds" style="font-size:10px">Data Sci</span>
+                <span class="chip automation" style="font-size:10px">Automation</span>
+              </div>
+              <div class="progress-bar" style="margin-top:10px"><div class="progress-fill" style="width:38%;background:linear-gradient(90deg,var(--green),#1aff88)"></div></div>
+              <div class="task-meta"><span>38% complete</span><span>Started 6 days ago</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- \u2500\u2500 PAGE: ONGOING \u2500\u2500 -->
+    <div class="page" id="page-ongoing">
+      <div class="panel hero">
+        <h2>\ud83d\udd04 Ongoing Tasks</h2>
+        <p class="muted">Tasks currently being processed by your agents. Monitor progress in real-time.</p>
+      </div>
+
+      <div class="task-list" id="ongoing-list">
+        <div class="task-card" style="--accent:var(--orange)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div class="task-title">Backend API Refactor</div>
+            <span class="badge running">Running</span>
+          </div>
+          <div class="task-desc">Refactoring the REST API to follow OpenAPI 3.0 spec. Migrating auth to JWT. Estimated 40% complete.</div>
+          <div class="progress-bar" style="margin-top:10px"><div class="progress-fill" style="width:40%"></div></div>
+          <div class="task-meta"><span>40% complete</span><span>CTO + Dev Engineer</span><span>Started 34 min ago</span></div>
+          <div class="task-actions">
+            <button class="btn sm warn">\u23f8 Pause</button>
+            <button class="btn sm danger" onclick="removeTask(this)">\u2715 Stop</button>
+          </div>
+        </div>
+
+        <div class="task-card" style="--accent:var(--purple)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div class="task-title">Sentiment Analysis Pipeline</div>
+            <span class="badge running">Running</span>
+          </div>
+          <div class="task-desc">Processing 200K customer reviews through the NLP sentiment model. Batch 3 of 8 in progress.</div>
+          <div class="progress-bar" style="margin-top:10px"><div class="progress-fill" style="width:37%;background:linear-gradient(90deg,var(--purple),#bf8fff)"></div></div>
+          <div class="task-meta"><span>37% complete</span><span>ML Agent + Data Scientist</span><span>Started 1h 12min ago</span></div>
+          <div class="task-actions">
+            <button class="btn sm warn">\u23f8 Pause</button>
+            <button class="btn sm danger" onclick="removeTask(this)">\u2715 Stop</button>
+          </div>
+        </div>
+
+        <div class="task-card" style="--accent:var(--green)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div class="task-title">Automated CI/CD Pipeline Setup</div>
+            <span class="badge running">Running</span>
+          </div>
+          <div class="task-desc">Configuring GitHub Actions workflows for automatic testing, staging deployment, and production release gating.</div>
+          <div class="progress-bar" style="margin-top:10px"><div class="progress-fill" style="width:78%;background:linear-gradient(90deg,var(--green),#1aff88)"></div></div>
+          <div class="task-meta"><span>78% complete</span><span>Automation Agent</span><span>Started 2h ago</span></div>
+          <div class="task-actions">
+            <button class="btn sm warn">\u23f8 Pause</button>
+            <button class="btn sm danger" onclick="removeTask(this)">\u2715 Stop</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- \u2500\u2500 PAGE: COMPLETED \u2500\u2500 -->
+    <div class="page" id="page-completed">
+      <div class="panel hero">
+        <h2>\u2705 Completed Tasks</h2>
+        <p class="muted">Archive of all successfully completed tasks and their outputs.</p>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi" style="--kpi-color:var(--green)">
+          <div class="label">Total Done</div>
+          <div class="value" style="color:var(--green)">189</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--cyan)">
+          <div class="label">This Week</div>
+          <div class="value" style="color:var(--cyan)">32</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--purple)">
+          <div class="label">Avg Time</div>
+          <div class="value" style="color:var(--purple)">2.4h</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--gold)">
+          <div class="label">Success Rate</div>
+          <div class="value" style="color:var(--gold)">96%</div>
+        </div>
+      </div>
+
+      <div class="task-list" style="margin-top:16px">
+        <div class="task-card" style="--accent:var(--green);opacity:.9">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div class="task-title">Market Research Report \u2014 APAC 2024</div>
+            <span class="badge done">Done</span>
+          </div>
+          <div class="task-desc">Comprehensive analysis of APAC market trends, competitive landscape, and growth opportunities. 48-page report generated.</div>
+          <div class="task-meta"><span>CMO + Data Scientist</span><span>Took 3h 22min</span><span>Completed 12 min ago</span></div>
+          <div class="task-actions">
+            <button class="btn sm cyan" onclick="showToast('\ud83d\udcc4 Opening output...')">\ud83d\udcc4 View Output</button>
+            <button class="btn sm secondary" onclick="showToast('\ud83d\udd01 Task added to queue!')">\ud83d\udd01 Re-run</button>
+          </div>
+        </div>
+
+        <div class="task-card" style="--accent:var(--green);opacity:.9">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div class="task-title">Security Vulnerability Audit</div>
+            <span class="badge done">Done</span>
+          </div>
+          <div class="task-desc">Full penetration test of API endpoints, dependency scanning, and OWASP top-10 review. 3 critical issues patched.</div>
+          <div class="task-meta"><span>Security Agent + QA</span><span>Took 1h 48min</span><span>Completed 1h ago</span></div>
+          <div class="task-actions">
+            <button class="btn sm cyan" onclick="showToast('\ud83d\udcc4 Opening output...')">\ud83d\udcc4 View Output</button>
+            <button class="btn sm secondary" onclick="showToast('\ud83d\udd01 Task added to queue!')">\ud83d\udd01 Re-run</button>
+          </div>
+        </div>
+
+        <div class="task-card" style="--accent:var(--green);opacity:.9">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div class="task-title">Employee Onboarding Workflow</div>
+            <span class="badge done">Done</span>
+          </div>
+          <div class="task-desc">Automated onboarding flow for new hires: account setup, training schedule, and document collection pipeline.</div>
+          <div class="task-meta"><span>HR Agent + Automation</span><span>Took 55min</span><span>Completed 3h ago</span></div>
+          <div class="task-actions">
+            <button class="btn sm cyan" onclick="showToast('\ud83d\udcc4 Opening output...')">\ud83d\udcc4 View Output</button>
+            <button class="btn sm secondary" onclick="showToast('\ud83d\udd01 Task added to queue!')">\ud83d\udd01 Re-run</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- \u2500\u2500 PAGE: OUTPUT \u2500\u2500 -->
+    <div class="page" id="page-output">
+      <div class="panel hero">
+        <h2>\ud83d\udce4 Output Log</h2>
+        <p class="muted">Real-time system log. All agent actions, completions, errors, and events are recorded here.</p>
+      </div>
+
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <h3 style="margin:0">\ud83d\udda5 System Log</h3>
+          <div style="display:flex;gap:8px">
+            <button class="btn sm secondary" onclick="clearLog()">Clear</button>
+            <button class="btn sm" onclick="addLogEntry()">+ Add Entry</button>
+          </div>
+        </div>
+        <div id="log-output" style="background:#04080f;border:1px solid #0e1f3a;border-radius:14px;padding:14px;font-family:'Courier New',monospace;font-size:12px;line-height:1.8;max-height:500px;overflow-y:auto;color:#7aa0d4">
+          <div><span style="color:#3a6aaa">[2025-01-15 09:41:02]</span> <span style="color:var(--green)">INFO</span> &nbsp;&nbsp; System startup complete. 12 agents initialized.</div>
+          <div><span style="color:#3a6aaa">[2025-01-15 09:41:05]</span> <span style="color:var(--cyan)">AGENT</span> &nbsp; Chairman AI: Loaded strategic context from workspace.</div>
+          <div><span style="color:#3a6aaa">[2025-01-15 09:42:18]</span> <span style="color:var(--green)">TASK</span> &nbsp;&nbsp; Dispatched: "Security Vulnerability Audit" \u2192 Security Agent</div>
+          <div><span style="color:#3a6aaa">[2025-01-15 09:45:30]</span> <span style="color:var(--orange)">WARN</span> &nbsp;&nbsp; ML Agent: Queue depth 8, throttling input rate.</div>
+          <div><span style="color:#3a6aaa">[2025-01-15 10:12:44]</span> <span style="color:var(--green)">DONE</span> &nbsp;&nbsp; "Security Vulnerability Audit" completed. 3 critical findings.</div>
+          <div><span style="color:#3a6aaa">[2025-01-15 10:22:11]</span> <span style="color:var(--cyan)">AGENT</span> &nbsp; CMO Agent: Market report generation started.</div>
+          <div><span style="color:#3a6aaa">[2025-01-15 10:58:06]</span> <span style="color:var(--green)">DONE</span> &nbsp;&nbsp; "Market Research Report \u2014 APAC 2024" completed. 48 pages.</div>
+          <div><span style="color:#3a6aaa">[2025-01-15 11:07:32]</span> <span style="color:var(--blue)">SYS</span> &nbsp;&nbsp;&nbsp; New task dispatched: "Backend API Refactor" \u2192 CTO + Dev Engineer</div>
+          <div><span style="color:#3a6aaa">[2025-01-15 11:08:01]</span> <span style="color:var(--purple)">ML</span> &nbsp;&nbsp;&nbsp;&nbsp; Sentiment Analysis Pipeline: Batch 1/8 complete (12,500 reviews).</div>
+          <div><span style="color:#3a6aaa">[2025-01-15 11:14:22]</span> <span style="color:var(--purple)">ML</span> &nbsp;&nbsp;&nbsp;&nbsp; Sentiment Analysis Pipeline: Batch 2/8 complete (25,000 reviews).</div>
+          <div id="log-end"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- \u2500\u2500 PAGE: FILES \u2500\u2500 -->
+    <div class="page" id="page-files">
+      <div class="panel hero">
+        <h2>\ud83d\udcc1 Files & Assets</h2>
+        <p class="muted">Upload, manage, and share files with your agents. Supports documents, datasets, code, images, and more.</p>
+      </div>
+
+      <div class="grid2">
+        <div class="panel">
+          <h3>\u2b06 Upload Files</h3>
+          <div id="drop-zone" style="border:2px dashed #1e3060;border-radius:14px;padding:32px;text-align:center;color:var(--muted);cursor:pointer;margin-top:10px;transition:.2s"
+            onclick="document.getElementById('file-upload').click()"
+            ondragover="event.preventDefault();this.style.borderColor='var(--blue)'"
+            ondragleave="this.style.borderColor='#1e3060'"
+            ondrop="handleDrop(event)">
+            <div style="font-size:36px;margin-bottom:10px">\ud83d\udcc2</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text)">Drop files here or click to browse</div>
+            <div style="font-size:12px;margin-top:6px">PDF, DOCX, CSV, JSON, ZIP, Images \u2014 max 100MB</div>
+          </div>
+          <input type="file" id="file-upload" style="display:none" multiple onchange="handleFileUpload(event)">
+          <button class="btn" onclick="document.getElementById('file-upload').click()">Choose Files</button>
+        </div>
+
+        <div class="panel">
+          <h3>\ud83d\udcc4 Uploaded Files</h3>
+          <div class="file-list" id="file-list" style="margin-top:8px">
+            <div class="file-card">
+              <div class="file-icon">\ud83d\udcca</div>
+              <div class="file-info">
+                <div class="file-name">Q4_Dataset_Analysis.csv</div>
+                <div class="file-meta">2.4 MB \u2022 Uploaded 2 days ago \u2022 Used by Data Scientist</div>
+              </div>
+              <button class="btn sm danger" style="margin-left:auto" onclick="removeFile(this)">\u2715</button>
+            </div>
+            <div class="file-card">
+              <div class="file-icon">\ud83d\udcc4</div>
+              <div class="file-info">
+                <div class="file-name">Product_Brief_v2.pdf</div>
+                <div class="file-meta">840 KB \u2022 Uploaded 5 days ago \u2022 Used by CMO Agent</div>
+              </div>
+              <button class="btn sm danger" style="margin-left:auto" onclick="removeFile(this)">\u2715</button>
+            </div>
+            <div class="file-card">
+              <div class="file-icon">\ud83d\udcbe</div>
+              <div class="file-info">
+                <div class="file-name">db_schema_v13.sql</div>
+                <div class="file-meta">128 KB \u2022 Uploaded 1 day ago \u2022 Used by Dev Engineer</div>
+              </div>
+              <button class="btn sm danger" style="margin-left:auto" onclick="removeFile(this)">\u2715</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- \u2500\u2500 PAGE: SETTINGS \u2500\u2500 -->
+    <div class="page" id="page-settings">
+      <div class="panel hero">
+        <h2>\u2699\ufe0f Settings</h2>
+        <p class="muted">Configure your AI system, agent behavior, API connections, and preferences.</p>
+      </div>
+
+      <div class="grid2">
+        <div class="panel">
+          <h3>\ud83d\udd11 API Configuration</h3>
+          <label>OpenAI API Key</label>
+          <input class="input" type="password" placeholder="sk-\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022" />
+          <label>Anthropic API Key</label>
+          <input class="input" type="password" placeholder="sk-ant-\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022" />
+          <label>Default Model</label>
+          <select class="input" style="cursor:pointer">
+            <option>GPT-4o (Recommended)</option>
+            <option>Claude 3.5 Sonnet</option>
+            <option>GPT-4 Turbo</option>
+            <option>Gemini 1.5 Pro</option>
+          </select>
+          <button class="btn" onclick="showToast('\u2705 API settings saved!')">Save API Settings</button>
+        </div>
+
+        <div class="panel">
+          <h3>\ud83e\udd16 Agent Behavior</h3>
+          <label>Max Concurrent Tasks</label>
+          <input class="input" type="number" value="5" min="1" max="20" />
+          <label>Task Timeout (minutes)</label>
+          <input class="input" type="number" value="120" min="10" />
+          <label>Auto-retry on Failure</label>
+          <select class="input" style="cursor:pointer">
+            <option>Yes \u2014 up to 3 retries</option>
+            <option>No \u2014 fail immediately</option>
+          </select>
+          <button class="btn" onclick="showToast('\u2705 Agent settings saved!')">Save Agent Settings</button>
+        </div>
+
+        <div class="panel">
+          <h3>\ud83d\udd14 Notifications</h3>
+          <label>Notify on Task Complete</label>
+          <select class="input" style="cursor:pointer"><option>Enabled</option><option>Disabled</option></select>
+          <label>Notify on Errors</label>
+          <select class="input" style="cursor:pointer"><option>Enabled</option><option>Disabled</option></select>
+          <label>Notify on Agent Idle</label>
+          <select class="input" style="cursor:pointer"><option>Disabled</option><option>Enabled</option></select>
+          <button class="btn secondary" onclick="showToast('\u2705 Notification settings saved!')">Save</button>
+        </div>
+
+        <div class="panel">
+          <h3>\ud83c\udfa8 Interface</h3>
+          <label>Theme</label>
+          <select class="input" style="cursor:pointer"><option>Dark (Default)</option><option>Midnight</option><option>Neon</option></select>
+          <label>Language</label>
+          <select class="input" style="cursor:pointer"><option>English</option><option>Arabic</option><option>French</option><option>Spanish</option></select>
+          <label>Timezone</label>
+          <select class="input" style="cursor:pointer"><option>UTC</option><option>UTC+3 (Riyadh)</option><option>UTC+4 (Dubai)</option><option>UTC-5 (New York)</option></select>
+          <button class="btn secondary" onclick="showToast('\u2705 Interface settings saved!')">Save</button>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:0">
+        <h3>\u26a0\ufe0f Danger Zone</h3>
+        <p class="muted" style="margin-bottom:12px">Irreversible actions. Proceed with caution.</p>
+        <div class="btn-row">
+          <button class="btn danger" onclick="confirmReset()">\ud83d\uddd1 Reset All Tasks</button>
+          <button class="btn danger" onclick="showToast('\ud83d\uddd1 Agent memory cleared.')">\ud83e\udde0 Clear Agent Memory</button>
+          <button class="btn danger" onclick="showToast('\u26a0\ufe0f Factory reset initiated...')">\ud83d\udc80 Factory Reset</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- \u2550\u2550 RIGHT PANEL \u2550\u2550 -->
+  <aside class="right">
+    <div class="viewer">
+      <h2 id="viewer-title">\ud83d\udd0d Task Viewer</h2>
+      <div class="viewer-sub" id="viewer-sub">Select a task or agent to inspect its details, progress, and live output here.</div>
+
+      <div class="section">
+        <div class="section-title">\ud83d\udce1 Live Agent Feed</div>
+        <div class="section-body" id="live-feed">
+<span style="color:var(--green)">\u25cf</span> Chairman AI: Monitoring task assignments...
+<span style="color:var(--cyan)">\u25cf</span> CTO Agent: Reviewing architecture for API refactor...
+<span style="color:var(--orange)">\u25cf</span> Dev Engineer: Writing auth middleware...
+<span style="color:var(--purple)">\u25cf</span> ML Agent: Processing batch 3/8 of sentiment pipeline...
+<span style="color:var(--green)">\u25cf</span> Automation Agent: Configuring GitHub Action triggers...
+<span style="color:var(--muted)">\u25cf</span> CMO Agent: Idle \u2014 awaiting next task
+<span style="color:var(--muted)">\u25cf</span> HR Agent: Idle \u2014 awaiting next task
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-
