@@ -1633,8 +1633,6 @@ function formatOutput(text) {
   `;
 }
   async function dispatchTask() {
-  alert("Clicked");
-
   const title = document.getElementById('task-title')?.value.trim();
   const desc = document.getElementById('task-desc')?.value.trim();
 
@@ -1643,6 +1641,30 @@ function formatOutput(text) {
     return;
   }
 
+  const ongoing = document.getElementById('ongoing-list');
+  const completedList = document.querySelector('#page-completed .task-list');
+
+  let ongoingCard = null;
+
+  if (ongoing) {
+    ongoingCard = document.createElement('div');
+    ongoingCard.className = 'task-card';
+    ongoingCard.style.cssText = '--accent:var(--orange); animation:fadeIn .3s ease;';
+    ongoingCard.innerHTML = `
+      <div class="task-title">${escHtml(title)}</div>
+      <div class="task-desc">${escHtml(desc || 'No description provided.')}</div>
+      <div class="task-meta">
+        <span>Running</span>
+        <span>Started just now</span>
+      </div>
+      <div class="task-actions">
+        <button class="btn sm warn" disabled>⏳ Processing</button>
+      </div>
+    `;
+    ongoing.prepend(ongoingCard);
+  }
+
+  clearForm();
   showToast('Sending to Orchegentra AI...');
 
   try {
@@ -1667,9 +1689,42 @@ function formatOutput(text) {
 
     window.lastOutput = data;
 
+    if (ongoingCard) ongoingCard.remove();
+
+    if (completedList) {
+      const completedCard = document.createElement('div');
+      completedCard.className = 'task-card';
+      completedCard.style.cssText = '--accent:var(--green); animation:fadeIn .3s ease; opacity:.95;';
+      completedCard.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div class="task-title">${escHtml(title)}</div>
+          <span class="badge done">Done</span>
+        </div>
+        <div class="task-desc">${escHtml(desc || 'No description provided.')}</div>
+        <div class="task-meta">
+          <span>Completed just now</span>
+        </div>
+        <div class="task-actions">
+          <button class="btn sm cyan" onclick="openOutputModal(this)">👁 View Output</button>
+        </div>
+      `;
+      completedList.prepend(completedCard);
+    }
+
     showToast('Task executed successfully');
   } catch (err) {
     console.error(err);
+
+    if (ongoingCard) {
+      ongoingCard.querySelector('.task-meta').innerHTML = `
+        <span>Failed</span>
+        <span>Backend error</span>
+      `;
+      ongoingCard.querySelector('.task-actions').innerHTML = `
+        <button class="btn sm danger">Failed</button>
+      `;
+    }
+
     showToast('Backend error');
   }
 }
