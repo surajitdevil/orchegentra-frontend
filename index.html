@@ -1552,305 +1552,385 @@
 </div>
 
 <script>
-  // &#x2500;&#x2500; Navigation &#x2500;&#x2500;
   const titles = {
-    home: ['&#x1F3E0; Dashboard', 'Overview of your AI orchestration system'],
-    command: ['&#x26A1; Command Center', 'Dispatch and manage tasks for your agents'],
-    agents: ['&#x1F916; AI Agents', '12 specialized agents in your workforce'],
-    workspace: ['&#x1F5C2; Workspace', 'Active projects and collaboration zones'],
-    ongoing: ['&#x1F504; Ongoing Tasks', 'Real-time task monitoring'],
-    completed: ['&#x2705; Completed Tasks', 'Archive of finished work'],
-    output: ['&#x1F4E4; Output Log', 'Live system event stream'],
-    files: ['&#x1F4C1; Files & Assets', 'Manage uploads and agent resources'],
-    settings: ['&#x2699;&#xFE0F; Settings', 'System configuration and preferences']
+    home: ['🏠 Dashboard', 'Overview of your AI orchestration system'],
+    command: ['⚡ Command Center', 'Dispatch tasks to your AI agents'],
+    agents: ['🤖 AI Agents', 'Your specialized AI workforce'],
+    workspace: ['🗂 Workspace', 'Projects, collaboration, and active context'],
+    ongoing: ['🔄 Ongoing Tasks', 'Tasks currently being processed'],
+    completed: ['✅ Completed', 'Finished tasks and archived outputs'],
+    output: ['📤 Output Log', 'System log and activity feed'],
+    files: ['📁 Files & Assets', 'Uploaded and staged files'],
+    settings: ['⚙️ Settings', 'System configuration and preferences']
   };
+
+  let toastTimer = null;
 
   function navigate(page, btn) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-    document.getElementById('page-' + page).classList.add('active');
+
+    const pageEl = document.getElementById('page-' + page);
+    if (pageEl) pageEl.classList.add('active');
     if (btn) btn.classList.add('active');
-    const [title, desc] = titles[page] || ['Dashboard', ''];
-    document.getElementById('page-title').textContent = title;
-    document.getElementById('page-desc').textContent = desc;
+
+    const entry = titles[page] || ['Dashboard', ''];
+    const titleEl = document.getElementById('page-title');
+    const descEl = document.getElementById('page-desc');
+
+    if (titleEl) titleEl.textContent = entry[0];
+    if (descEl) descEl.textContent = entry[1];
   }
 
-  // &#x2500;&#x2500; Clock &#x2500;&#x2500;
   function updateClock() {
-    const now = new Date();
-    document.getElementById('clock').textContent =
-      now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-  }
-  setInterval(updateClock, 1000);
-  updateClock();
+    const clock = document.getElementById('clock');
+    if (!clock) return;
 
-  // &#x2500;&#x2500; Toast &#x2500;&#x2500;
-  let toastTimer;
+    const now = new Date();
+    clock.textContent = now.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  }
+
   function showToast(msg) {
     const t = document.getElementById('toast');
+    if (!t) return;
+
     t.textContent = msg;
     t.classList.add('show');
+
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+    toastTimer = setTimeout(() => {
+      t.classList.remove('show');
+    }, 3000);
   }
 
-  // &#x2500;&#x2500; Dispatch Task &#x2500;&#x2500;
+  function escHtml(str) {
+    return String(str ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   function dispatchTask() {
-    const title = document.getElementById('task-title').value.trim();
-    const desc = document.getElementById('task-desc').value.trim();
-    const priority = document.getElementById('task-priority').value;
-    const agent = document.getElementById('task-agent').value;
-    if (!title) { showToast('&#x26A0;&#xFE0F; Please enter a task title.'); return; }
-    const pIcon = priority === 'high' ? '&#x1F534;' : priority === 'medium' ? '&#x1F7E1;' : '&#x1F7E2;';
-    const agentLabel = document.getElementById('task-agent').selectedOptions[0].text;
-    const accentColors = {high:'var(--red)',medium:'var(--orange)',low:'var(--blue)'};
+    const title = document.getElementById('task-title')?.value.trim() || '';
+    const desc = document.getElementById('task-desc')?.value.trim() || '';
+
+    if (!title) {
+      showToast('Please enter a task title');
+      return;
+    }
+
+    const queue = document.getElementById('queue-list');
+    if (!queue) {
+      showToast('Queue list not found');
+      return;
+    }
+
     const card = document.createElement('div');
     card.className = 'task-card';
-    card.style.cssText = `--accent:${accentColors[priority]};animation:fadeIn .3s ease`;
+    card.style.cssText = '--accent:var(--orange); animation:fadeIn .3s ease;';
     card.innerHTML = `
       <div class="task-title">${escHtml(title)}</div>
       <div class="task-desc">${escHtml(desc || 'No description provided.')}</div>
-      <div class="task-meta"><span>${pIcon} ${priority.charAt(0).toUpperCase()+priority.slice(1)}</span><span>${agentLabel}</span></div>
+      <div class="task-meta">
+        <span>Pending</span>
+        <span>Just now</span>
+      </div>
       <div class="task-actions">
-        <button class="btn sm success" onclick="startTask(this)">&#x25B6; Start</button>
-        <button class="btn sm danger" onclick="removeTask(this)">&#x2715; Remove</button>
-      </div>`;
-    document.getElementById('queue-list').prepend(card);
-    addLog(`QUEUE  Task added: "${title}"`);
-    showToast(`&#x2705; Task "${title}" added to queue!`);
+        <button class="btn sm success" onclick="startTask(this)">▶ Start</button>
+        <button class="btn sm danger" onclick="removeTask(this)">✖ Remove</button>
+      </div>
+    `;
+
+    queue.prepend(card);
     clearForm();
+    showToast('Task added to queue');
   }
 
   function clearForm() {
-    document.getElementById('task-title').value = '';
-    document.getElementById('task-desc').value = '';
-    document.getElementById('task-priority').value = 'medium';
-    document.getElementById('task-agent').value = 'auto';
+    const title = document.getElementById('task-title');
+    const desc = document.getElementById('task-desc');
+    const pr = document.getElementById('task-priority');
+    const ag = document.getElementById('task-agent');
+
+    if (title) title.value = '';
+    if (desc) desc.value = '';
+    if (pr) pr.value = 'medium';
+    if (ag) ag.value = 'auto';
   }
 
-  // &function startTask(btn) {
+  function startTask(btn) {
     const card = btn.closest('.task-card');
-    const title = card.querySelector('.task-title').textContent;
+    if (!card) return;
+
+    const title = card.querySelector('.task-title')?.textContent || 'Task';
+    const ongoing = document.getElementById('ongoing-list');
+    if (!ongoing) {
+      showToast('Ongoing list not found');
+      return;
+    }
 
     const ongoingCard = card.cloneNode(true);
-
     const actions = ongoingCard.querySelector('.task-actions');
-    actions.innerHTML = `
+
+    if (actions) {
+      actions.innerHTML = `
         <button class="btn sm warn" onclick="completeTask(this)">✔ Complete</button>
         <button class="btn sm danger" onclick="removeTask(this)">✖ Stop</button>
-    `;
+      `;
+    }
 
     const meta = ongoingCard.querySelector('.task-meta');
     if (meta) {
-        meta.innerHTML += ` <span class="badge running">Running</span>`;
+      meta.innerHTML = `<span>Running</span><span>Started just now</span>`;
     }
 
-    document.getElementById('ongoing-list').prepend(ongoingCard);
-
+    ongoing.prepend(ongoingCard);
     card.remove();
 
-    addLog(`AGENT  Task started: "${title}"`);
-    showToast(`Task moved to ongoing`);
-}
-function completeTask(btn) {
-    const card = btn.closest('.task-card');
-    const title = card.querySelector('.task-title').textContent;
+    addLog(`TASK started: ${title}`);
+    showToast('Task moved to ongoing');
+  }
 
+  function completeTask(btn) {
+    const card = btn.closest('.task-card');
+    if (!card) return;
+
+    const title = card.querySelector('.task-title')?.textContent || 'Task';
     const completedList = document.querySelector('#page-completed .task-list');
+    if (!completedList) {
+      showToast('Completed list not found');
+      return;
+    }
 
     const completedCard = card.cloneNode(true);
 
     const meta = completedCard.querySelector('.task-meta');
     if (meta) {
-        meta.innerHTML = `<span class="badge done">Done</span>`;
+      meta.innerHTML = `<span>Done</span><span>Completed just now</span>`;
     }
 
     const actions = completedCard.querySelector('.task-actions');
     if (actions) {
-        actions.innerHTML = `
-            <button class="btn sm cyan" onclick="showToast('Opening output...')">View Output</button>
-        `;
+      actions.innerHTML = `
+        <button class="btn sm cyan" onclick="showToast('Opening output...')">View Output</button>
+      `;
     }
 
     completedList.prepend(completedCard);
-
     card.remove();
 
-    addLog(`DONE  Task completed: "${title}"`);
-    showToast(`Task completed`);
-}
-  
+    addLog(`TASK completed: ${title}`);
+    showToast('Task completed');
+  }
 
   function removeTask(btn) {
     const card = btn.closest('.task-card');
-    card.style.transition = 'opacity .3s, transform .3s';
-    card.style.opacity = '0';
-    card.style.transform = 'translateX(20px)';
-    setTimeout(() => card.remove(), 300);
-    showToast('&#x1F5D1; Task removed.');
+    if (!card) return;
+    card.remove();
+    showToast('Task removed');
   }
 
-  // &#x2500;&#x2500; Agent toggle &#x2500;&#x2500;
   function toggleAgent(el) {
+    if (!el) return;
     el.style.opacity = el.style.opacity === '0.4' ? '1' : '0.4';
   }
 
-  // &#x2500;&#x2500; Create Project &#x2500;&#x2500;
   function createProject() {
-    const name = document.getElementById('proj-name').value.trim();
-    const obj = document.getElementById('proj-obj').value.trim();
-    if (!name) { showToast('&#x26A0;&#xFE0F; Enter a project name.'); return; }
+    const name = document.getElementById('proj-name')?.value.trim() || '';
+    const obj = document.getElementById('proj-obj')?.value.trim() || '';
+
+    if (!name) {
+      showToast('Enter a project name');
+      return;
+    }
+
+    const list = document.getElementById('project-list');
+    if (!list) {
+      showToast('Project list not found');
+      return;
+    }
+
     const card = document.createElement('div');
     card.className = 'task-card';
-    card.style.cssText = '--accent:var(--cyan);animation:fadeIn .3s ease';
+    card.style.cssText = '--accent:var(--cyan); animation:fadeIn .3s ease;';
     card.innerHTML = `
       <div class="task-title">${escHtml(name)}</div>
       <div class="task-desc">${escHtml(obj || 'No objective provided.')}</div>
-      <div class="progress-bar" style="margin-top:10px"><div class="progress-fill" style="width:0%"></div></div>
-      <div class="task-meta"><span>0% complete</span><span>Just created</span></div>`;
-    document.getElementById('project-list').prepend(card);
-    document.getElementById('proj-name').value = '';
-    document.getElementById('proj-obj').value = '';
-    showToast(`&#x1F5C2; Project "${name}" created!`);
+      <div class="progress-bar" style="margin-top:10px">
+        <div class="progress-fill" style="width:0%"></div>
+      </div>
+      <div class="task-meta"><span>0% complete</span><span>Just created</span></div>
+    `;
+
+    list.prepend(card);
+
+    const n = document.getElementById('proj-name');
+    const o = document.getElementById('proj-obj');
+    if (n) n.value = '';
+    if (o) o.value = '';
+
+    showToast('Project created');
   }
 
-  // &#x2500;&#x2500; Log &#x2500;&#x2500;
   function addLog(msg) {
     const log = document.getElementById('log-output');
+    const end = document.getElementById('log-end');
+    if (!log || !end) return;
+
     const now = new Date();
-    const ts = now.getFullYear() + '-' +
-      String(now.getMonth()+1).padStart(2,'0') + '-' +
-      String(now.getDate()).padStart(2,'0') + ' ' +
-      String(now.getHours()).padStart(2,'0') + ':' +
-      String(now.getMinutes()).padStart(2,'0') + ':' +
-      String(now.getSeconds()).padStart(2,'0');
+    const ts =
+      String(now.getFullYear()) + '-' +
+      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+      String(now.getDate
+             
+()).padStart(2, '0') + ' ' +
+      String(now.getHours()).padStart(2, '0') + ':' +
+      String(now.getMinutes()).padStart(2, '0') + ':' +
+      String(now.getSeconds()).padStart(2, '0');
+
     const div = document.createElement('div');
     div.style.color = '#7aa0d4';
     div.innerHTML = `<span style="color:#3a6aaa">[${ts}]</span> ${escHtml(msg)}`;
-    document.getElementById('log-end').before(div);
+    end.before(div);
     log.scrollTop = log.scrollHeight;
   }
 
   function addLogEntry() {
     const msgs = [
-      'INFO   Heartbeat check passed &mdash; all agents responsive.',
-      'AGENT  Operations Agent: Resource rebalancing complete.',
-      'TASK   New task assigned to Builder Agent.',
-      'SYS    Memory optimization complete. Freed 128MB.',
-      'ML     Model checkpoint saved successfully.',
-      'AGENT  QA Agent: Running regression suite...',
+      'INFO Heartbeat check passed.',
+      'AGENT Operations Agent resource balancing complete.',
+      'TASK New task assigned to Builder Agent.',
+      'SYS Memory optimization complete.',
+      'ML Model checkpoint saved successfully.',
+      'QA Regression suite running.'
     ];
+
     addLog(msgs[Math.floor(Math.random() * msgs.length)]);
   }
 
   function clearLog() {
     const log = document.getElementById('log-output');
     const end = document.getElementById('log-end');
+    if (!log || !end) return;
+
     while (log.firstChild && log.firstChild !== end) {
       log.removeChild(log.firstChild);
     }
-    showToast('&#x1F5D1; Log cleared.');
+
+    showToast('Log cleared');
   }
 
-  // &#x2500;&#x2500; Files &#x2500;&#x2500;
   function handleFileUpload(event) {
-    const files = Array.from(event.target.files);
+    const files = Array.from(event.target.files || []);
     files.forEach(file => addFileCard(file.name, file.size));
   }
 
   function handleDrop(event) {
     event.preventDefault();
-    document.getElementById('drop-zone').style.borderColor = '#1e3060';
-    const files = Array.from(event.dataTransfer.files);
+    const dz = document.getElementById('drop-zone');
+    if (dz) dz.style.borderColor = '#1e3060';
+
+    const files = Array.from(event.dataTransfer.files || []);
     files.forEach(file => addFileCard(file.name, file.size));
   }
 
   function addFileCard(name, size) {
-    const ext = name.split('.').pop().toLowerCase();
-    const icons = {pdf:'&#x1F4C4;',csv:'&#x1F4CA;',xlsx:'&#x1F4CA;',json:'&#x1F4CB;',sql:'&#x1F4BE;',png:'&#x1F5BC;',jpg:'&#x1F5BC;',zip:'&#x1F5DC;',doc:'&#x1F4DD;',docx:'&#x1F4DD;'};
-    const icon = icons[ext] || '&#x1F4CE;';
-    const sizeFmt = size > 1048576 ? (size/1048576).toFixed(1)+' MB' : (size/1024).toFixed(0)+' KB';
+    const list = document.getElementById('file-list');
+    if (!list) return;
+
+    const ext = String(name).split('.').pop().toLowerCase();
+    const icons = {
+      pdf:'📄',
+      csv:'📊',
+      xlsx:'📊',
+      json:'📋',
+      sql:'💾',
+      png:'🖼',
+      jpg:'🖼',
+      jpeg:'🖼',
+      zip:'🗜',
+      doc:'📝',
+      docx:'📝'
+    };
+    const icon = icons[ext] || '📎';
+
+    const sizeFmt = size > 1048576
+      ? (size / 1048576).toFixed(1) + ' MB'
+      : (size / 1024).toFixed(0) + ' KB';
+
     const card = document.createElement('div');
     card.className = 'file-card';
-    card.style.animation = 'fadeIn .3s ease';
     card.innerHTML = `
       <div class="file-icon">${icon}</div>
       <div class="file-info">
         <div class="file-name">${escHtml(name)}</div>
-        <div class="file-meta">${sizeFmt} &bull; Just uploaded</div>
+        <div class="file-meta">${sizeFmt} • Just uploaded</div>
       </div>
-      <button class="btn sm danger" style="margin-left:auto" onclick="removeFile(this)">&#x2715;</button>`;
-    document.getElementById('file-list').prepend(card);
-    showToast(`&#x1F4C1; "${name}" uploaded!`);
+      <button class="btn sm danger" style="margin-left:auto" onclick="removeFile(this)">✖</button>
+    `;
+
+    list.prepend(card);
+    showToast(`${name} uploaded`);
   }
 
   function removeFile(btn) {
     const card = btn.closest('.file-card');
-    card.style.transition = 'opacity .3s';
-    card.style.opacity = '0';
-    setTimeout(() => card.remove(), 300);
-    showToast('&#x1F5D1; File removed.');
+    if (!card) return;
+    card.remove();
+    showToast('File removed');
   }
 
-  // &#x2500;&#x2500; Send Message &#x2500;&#x2500;
   function sendMessage() {
-    const msg = document.getElementById('agent-message').value.trim();
-    if (!msg) { showToast('&#x26A0;&#xFE0F; Message is empty.'); return; }
-    document.getElementById('agent-message').value = '';
-    const feed = document.getElementById('live-feed');
-    feed.textContent += `\n\u25CF You: ${msg}`;
-    setTimeout(() => {
-      feed.textContent += `\n\u25CF Chairman AI: Received. Delegating to the appropriate agent.`;
-    }, 800);
-    showToast('&#x1F4E8; Message sent to agent chain!');
+    const msgEl = document.getElementById('agent-message');
+    if (!msgEl) return;
+
+    const msg = msgEl.value.trim();
+    if (!msg) {
+      showToast('Message is empty');
+      return;
+    }
+
+    msgEl.value = '';
+    showToast('Message sent');
   }
 
-  // &#x2500;&#x2500; Modal &#x2500;&#x2500;
   function confirmReset() {
-    document.getElementById('modal-title').textContent = '&#x26A0;&#xFE0F; Reset All Tasks';
-    document.getElementById('modal-body').textContent = 'This will permanently delete all tasks from queue, ongoing, and completed lists. This action cannot be undone.';
-    document.getElementById('modal-confirm').onclick = () => {
-      ['queue-list','ongoing-list'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.innerHTML = '<p class="empty">No tasks found.</p>';
-      });
+    const modal = document.getElementById('modal-overlay');
+    const title = document.getElementById('modal-title');
+    const body = document.getElementById('modal-body');
+    const confirmBtn = document.getElementById('modal-confirm');
+
+    if (!modal || !title || !body || !confirmBtn) return;
+
+    title.textContent = 'Confirm Action';
+    body.textContent = 'Are you sure you want to reset all UI tasks?';
+    confirmBtn.onclick = function () {
+      document.getElementById('queue-list')?.replaceChildren();
+      document.getElementById('ongoing-list')?.replaceChildren();
+      const completed = document.querySelector('#page-completed .task-list');
+      if (completed) completed.replaceChildren();
       closeModal();
-      showToast('&#x1F5D1; All tasks have been reset.');
+      showToast('UI reset done');
     };
-    document.getElementById('modal-overlay').classList.add('open');
+
+    modal.classList.add('open');
   }
 
   function closeModal() {
-    document.getElementById('modal-overlay').classList.remove('open');
+    const modal = document.getElementById('modal-overlay');
+    if (modal) modal.classList.remove('open');
   }
 
-  // &#x2500;&#x2500; Live feed ticker &#x2500;&#x2500;
-  const feedLines = [
-    '&#x25CF; Chairman AI: Reviewing task priorities...',
-    '&#x25CF; CTO Agent: Code review session initiated...',
-    '&#x25CF; Dev Engineer: Debugging auth token expiry issue...',
-    '&#x25CF; ML Agent: Batch 4/8 processing...',
-    '&#x25CF; Automation Agent: Trigger registered for deploy event...',
-    '&#x25CF; Security Agent: Monitoring API rate limits...',
-    '&#x25CF; Builder Agent: Scaffold generation complete...',
-    '&#x25CF; QA Agent: Running test suite iteration 3...',
-    '&#x25CF; Data Scientist: Generating model performance report...',
-    '&#x25CF; Operations Agent: Resource usage within bounds...',
-  ];
-  let feedIdx = 0;
-  setInterval(() => {
-    const feed = document.getElementById('live-feed');
-    const lines = feed.textContent.trim().split('\n');
-    lines.shift();
-    lines.push(feedLines[feedIdx % feedLines.length]);
-    feed.textContent = lines.join('\n');
-    feedIdx++;
-  }, 3500);
-
-  // &#x2500;&#x2500; Utility &#x2500;&#x2500;
-  function escHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
+  updateClock();
+  setInterval(updateClock, 1000);
 </script>
 </body>
 </html>
+
+             
