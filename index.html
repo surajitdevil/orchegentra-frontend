@@ -1616,7 +1616,7 @@
         <button class="btn sm danger" onclick="removeTask(this)">&#x2715; Remove</button>
       </div>`;
     document.getElementById('queue-list').prepend(card);
-    addLog(`TASK   Dispatched: "${title}" &#x2192; ${agentLabel}`);
+    addLog(`QUEUE  Task added: "${title}"`);
     showToast(`&#x2705; Task "${title}" added to queue!`);
     clearForm();
   }
@@ -1628,16 +1628,58 @@
     document.getElementById('task-agent').value = 'auto';
   }
 
-  // &#x2500;&#x2500; Task actions &#x2500;&#x2500;
-  function startTask(btn) {
+  // &function startTask(btn) {
     const card = btn.closest('.task-card');
     const title = card.querySelector('.task-title').textContent;
-    card.style.opacity = '.5';
-    card.style.pointerEvents = 'none';
-    addLog(`SYS    Task started: "${title}"`);
-    showToast(`&#x25B6; Task "${title}" started!`);
-    setTimeout(() => card.remove(), 600);
-  }
+
+    const ongoingCard = card.cloneNode(true);
+
+    const actions = ongoingCard.querySelector('.task-actions');
+    actions.innerHTML = `
+        <button class="btn sm warn" onclick="completeTask(this)">✔ Complete</button>
+        <button class="btn sm danger" onclick="removeTask(this)">✖ Stop</button>
+    `;
+
+    const meta = ongoingCard.querySelector('.task-meta');
+    if (meta) {
+        meta.innerHTML += ` <span class="badge running">Running</span>`;
+    }
+
+    document.getElementById('ongoing-list').prepend(ongoingCard);
+
+    card.remove();
+
+    addLog(`AGENT  Task started: "${title}"`);
+    showToast(`Task moved to ongoing`);
+}
+function completeTask(btn) {
+    const card = btn.closest('.task-card');
+    const title = card.querySelector('.task-title').textContent;
+
+    const completedList = document.querySelector('#page-completed .task-list');
+
+    const completedCard = card.cloneNode(true);
+
+    const meta = completedCard.querySelector('.task-meta');
+    if (meta) {
+        meta.innerHTML = `<span class="badge done">Done</span>`;
+    }
+
+    const actions = completedCard.querySelector('.task-actions');
+    if (actions) {
+        actions.innerHTML = `
+            <button class="btn sm cyan" onclick="showToast('Opening output...')">View Output</button>
+        `;
+    }
+
+    completedList.prepend(completedCard);
+
+    card.remove();
+
+    addLog(`DONE  Task completed: "${title}"`);
+    showToast(`Task completed`);
+}
+  
 
   function removeTask(btn) {
     const card = btn.closest('.task-card');
