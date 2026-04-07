@@ -1633,6 +1633,7 @@ function formatOutput(text) {
   `;
 }
   async function dispatchTask() {
+  alert("Clicked");
   const title = document.getElementById('task-title')?.value.trim();
   const desc = document.getElementById('task-desc')?.value.trim();
 
@@ -1645,9 +1646,9 @@ function formatOutput(text) {
 
   try {
     const createRes = await 
-    fetch('https://adventurous
-    -art-production.up.railway
-    .app/api/tasks/create', {
+    fetch('https://adventurous-art
+    -production.up.railway.app
+    /api/tasks/create', {
 
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
@@ -1658,7 +1659,10 @@ const createData = await createRes.json();
 if (!createData.ok) throw new Error(createData.error || 'Task creation failed');
 
 const taskId = createData.task.id;
-const res = await fetch(`https://adventurous-art-production.up.railway.app/api/tasks/${taskId}/execute`, {
+const res = await 
+fetch(`https://adventurous-art
+-production.up.railway.app
+/api/tasks/${taskId}/execute`, {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' }
 });
