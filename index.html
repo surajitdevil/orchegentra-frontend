@@ -1632,41 +1632,37 @@ function formatOutput(text) {
     </div>
   `;
 }
-  function dispatchTask() {
-    const title = document.getElementById('task-title')?.value.trim() || '';
-    const desc = document.getElementById('task-desc')?.value.trim() || '';
+  funcasync function dispatchTask() {
+  const title = document.getElementById('task-title')?.value.trim();
+  const desc = document.getElementById('task-desc')?.value.trim();
 
-    if (!title) {
-      showToast('Please enter a task title');
-      return;
-    }
-
-    const queue = document.getElementById('queue-list');
-    if (!queue) {
-      showToast('Queue list not found');
-      return;
-    }
-
-    const card = document.createElement('div');
-    card.className = 'task-card';
-    card.style.cssText = '--accent:var(--orange); animation:fadeIn .3s ease;';
-    card.innerHTML = `
-      <div class="task-title">${escHtml(title)}</div>
-      <div class="task-desc">${escHtml(desc || 'No description provided.')}</div>
-      <div class="task-meta">
-        <span>Pending</span>
-        <span>Just now</span>
-      </div>
-      <div class="task-actions">
-        <button class="btn sm success" onclick="startTask(this)">▶ Start</button>
-        <button class="btn sm danger" onclick="removeTask(this)">✖ Remove</button>
-      </div>
-    `;
-
-    queue.prepend(card);
-    clearForm();
-    showToast('Task added to queue');
+  if (!title) {
+    showToast('Please enter a task title');
+    return;
   }
+
+  showToast('Sending to Orchegentra AI...');
+
+  try {
+    const res = await fetch('https://adventurous-art-production.up.railway
+                            .app/api/task/execute' , {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, description: desc })
+    });
+
+    const data = await res.json();
+
+    window.lastOutput = data;
+
+    showToast('Task executed successfully');
+
+  } catch (err) {
+    console.error(err);
+    showToast('Backend error');
+  }
+}
+    co
 
   function clearForm() {
     const title = document.getElementById('task-title');
@@ -1946,29 +1942,40 @@ function openOutputModal(btn) {
   const title = document.getElementById('modal-title');
   const body = document.getElementById('modal-body');
 
+  if (!modal || !title || !body) return;
+
   title.textContent = 'Task Output';
 
-  // Dummy structured output (for now)
-  const output = {
-    chairman: "Task strategy defined.\n## Goal\nBuild scalable system",
-    cto: "Architecture planned.\nUsing Node + Supabase",
-    qa: "Testing completed.\nNo critical bugs",
-    final: "**Success:** Task executed successfully."
-  };
+  const card = btn.closest('.task-card');
+  const taskTitle = card?.querySelector('.task-title')?.textContent || 'Task';
+  const output = window.lastOutput || {};
 
   body.innerHTML = `
-    ${renderOutputSection('Chairman AI', output.chairman)}
-    ${renderOutputSection('CTO Agent', output.cto)}
-    ${renderOutputSection('QA Agent', output.qa)}
+    <div class="section">
+      <div class="section-title">Task</div>
+      <div class="section-body">${escHtml(taskTitle)}</div>
+    </div>
+    <div class="section">
+      <div class="section-title">Chairman AI</div>
+      <div class="section-body">${formatOutput(output.chairman || 'No chairman output available.')}</div>
+    </div>
+    <div class="section">
+      <div class="section-title">CTO Agent</div>
+      <div class="section-body">${formatOutput(output.cto || 'No CTO output available.')}</div>
+    </div>
+    <div class="section">
+      <div class="section-title">QA Agent</div>
+      <div class="section-body">${formatOutput(output.qa || 'No QA output available.')}</div>
+    </div>
     <div class="section">
       <div class="section-title">Final Output</div>
-      <div class="section-body">${formatOutput(output.final)}</div>
+      <div class="section-body">${formatOutput(output.final || 'No final output available.')}</div>
     </div>
   `;
 
   modal.classList.add('open');
 }
-  updateClock();
+updateClock();
   setInterval(updateClock, 1000);
 </script>
 </body>
