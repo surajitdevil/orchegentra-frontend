@@ -6,12 +6,29 @@
   <title>ORCHEGENTRA AI</title>
   <style>
     :root{
-      --bg:#050915;
-      --panel:#0b1430;
-      --panel2:#101b3e;
-      --text:#f4f7ff;
-      --muted:#9fb0d8;
-      --line:#22345f;
+      --bg:#040814;
+      --bg2:#091224;
+      --panel:rgba(10,18,38,.86);
+      --panel2:rgba(13,22,44,.94);
+      --line:rgba(115,149,255,.18);
+      --line2:rgba(115,149,255,.34);
+      --text:#eef4ff;
+      --muted:#98add9;
+
+      --chairman:#ffd76e;
+      --cto:#7fb0ff;
+      --cmo:#ff8ad8;
+      --hr:#72e9ff;
+      --ds:#b894ff;
+      --de:#5ef0b2;
+      --ml:#9a7cff;
+      --builder:#ffb063;
+      --automation:#6dff97;
+      --qa:#f4f7ff;
+      --operations:#ffc96a;
+      --security:#ff7b8b;
+      --summary:#cfd8ea;
+
       --blue:#5a7cff;
       --cyan:#28d7ff;
       --purple:#8f5cff;
@@ -20,716 +37,329 @@
       --pink:#ff5db1;
       --red:#ff5c6a;
       --gold:#d9a628;
+      --shadow:0 18px 45px rgba(0,0,0,.38);
     }
 
     *{box-sizing:border-box}
-
+    html,body{margin:0;min-height:100%}
     body{
-      margin:0;
-      font-family:Arial, sans-serif;
+      font-family:Arial,sans-serif;
       color:var(--text);
       background:
-        radial-gradient(circle at 15% 10%, rgba(40,215,255,.08), transparent 20%),
-        radial-gradient(circle at 85% 8%, rgba(143,92,255,.10), transparent 22%),
-        linear-gradient(180deg,#03060f,#07101f 45%,#091426);
+        radial-gradient(circle at 12% 10%, rgba(40,215,255,.11), transparent 18%),
+        radial-gradient(circle at 83% 10%, rgba(143,92,255
+
+                                                radial-gradient(circle at 83% 10%, rgba(143,92,255,.12), transparent 20%),
+        radial-gradient(circle at 50% 90%, rgba(40,215,122,.10), transparent 25%),
+        linear-gradient(180deg,var(--bg),var(--bg2));
     }
 
     .app{
       display:grid;
-      grid-template-columns:250px 1fr 360px;
+      grid-template-columns:260px 1fr 360px;
       min-height:100vh;
     }
 
+    /* SIDEBAR */
     .sidebar{
-      background:rgba(8,14,30,.95);
+      background:rgba(6,10,22,.95);
       border-right:1px solid var(--line);
-      padding:18px 14px;
+      padding:18px;
     }
 
-    .brand{
-      background:linear-gradient(135deg, rgba(90,124,255,.18), rgba(40,215,255,.08), rgba(143,92,255,.08));
-      border:1px solid #324a82;
-      border-radius:18px;
-      padding:16px;
-      box-shadow:0 0 25px rgba(90,124,255,.12);
-    }
-
-    .brand-title{
+    .logo{
       font-size:26px;
       font-weight:900;
-    }
-
-    .brand-sub{
-      margin-top:6px;
-      font-size:11px;
-      color:var(--muted);
-      letter-spacing:2px;
-    }
-
-    .nav{
-      margin-top:18px;
-      display:grid;
-      gap:10px;
+      letter-spacing:1px;
+      margin-bottom:20px;
+      color:var(--cyan);
+      text-shadow:0 0 18px rgba(40,215,255,.6);
     }
 
     .nav button{
       width:100%;
-      padding:12px 14px;
+      padding:12px;
+      margin-top:10px;
       border:none;
       border-radius:12px;
-      background:#111c3d;
+      background:#0f1a3a;
       color:white;
-      text-align:left;
       cursor:pointer;
+      border:1px solid #223a72;
       font-weight:700;
-      border:1px solid #233764;
+      transition:.2s;
+    }
+
+    .nav button:hover{
+      transform:translateY(-2px);
+      box-shadow:0 0 20px rgba(90,124,255,.3);
     }
 
     .nav button.active{
-      box-shadow:0 0 18px rgba(90,124,255,.18);
-      border-color:#4a67b6;
+      background:linear-gradient(90deg,var(--blue),var(--purple));
+      box-shadow:0 0 25px rgba(90,124,255,.6);
     }
 
-    .nav button.home.active{ background:linear-gradient(90deg, rgba(40,215,255,.2), rgba(40,215,255,.06)); }
-    .nav button.command.active{ background:linear-gradient(90deg, rgba(90,124,255,.2), rgba(90,124,255,.06)); }
-    .nav button.agents.active{ background:linear-gradient(90deg, rgba(143,92,255,.2), rgba(143,92,255,.06)); }
-    .nav button.workspace.active{ background:linear-gradient(90deg, rgba(40,215,122,.2), rgba(40,215,122,.06)); }
-    .nav button.ongoing.active{ background:linear-gradient(90deg, rgba(255,157,61,.2), rgba(255,157,61,.06)); }
-    .nav button.completed.active{ background:linear-gradient(90deg, rgba(255,93,177,.2), rgba(255,93,177,.06)); }
-    .nav button.output.active{ background:linear-gradient(90deg, rgba(217,166,40,.2), rgba(217,166,40,.06)); }
-    .nav button.files.active{ background:linear-gradient(90deg, rgba(40,215,255,.16), rgba(143,92,255,.06)); }
-    .nav button.settings.active{ background:linear-gradient(90deg, rgba(255,255,255,.14), rgba(255,255,255,.04)); }
-
+    /* MAIN */
     .main{
-      padding:18px;
+      padding:20px;
     }
 
-    .topbar{
-      background:rgba(11,20,48,.88);
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:16px;
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:center;
-    }
-
-    .topbar h1{
-      margin:0;
-      font-size:24px;
-    }
-
-    .topbar p{
-      margin:6px 0 0;
-      color:var(--muted);
-      font-size:12px;
-    }
-
-    .page{
-      display:none;
-      margin-top:16px;
-    }
-
-    .page.active{
-      display:block;
-    }
+    .page{display:none}
+    .page.active{display:block}
 
     .panel{
-      background:rgba(11,20,48,.9);
+      background:var(--panel);
       border:1px solid var(--line);
-      border-radius:18px;
+      border-radius:16px;
       padding:16px;
       margin-bottom:16px;
+      box-shadow:var(--shadow);
     }
 
-    .panel h2{
-      margin:0 0 10px;
-      font-size:22px;
-    }
-
-    .panel h3{
-      margin:0 0 10px;
-      font-size:18px;
-    }
-
-    .muted{
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    .kpis{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:12px;
-    }
-
-    .kpi{
-      background:#101b3e;
-      border:1px solid #233764;
-      border-radius:16px;
-      padding:14px;
-    }
-
-    .kpi .label{
-      color:var(--muted);
-      font-size:12px;
-    }
-
-    .kpi .value{
-      margin-top:8px;
-      font-size:28px;
-      font-weight:900;
-    }
-
-    .input,.textarea,.btn,.file-input{
+    /* INPUT */
+    input,textarea{
       width:100%;
-      padding:13px;
-      border-radius:12px;
-      border:none;
-      box-sizing:border-box;
-      margin-top:10px;
-      font-size:14px;
-    }
-
-    .input,.textarea,.file-input{
-      background:#0f1627;
-      color:var(--text);
-      border:1px solid #22345f;
-    }
-
-    .textarea{
-      min-height:120px;
-      resize:vertical;
-    }
-
-    .btn{
-      cursor:pointer;
+      padding:12px;
+      border-radius:10px;
+      border:1px solid #2a3f77;
+      background:#0c152f;
       color:white;
-      font-weight:800;
-      background:linear-gradient(90deg, var(--blue), var(--purple));
+      margin-top:10px;
     }
 
-    .btn.secondary{
-      background:#25365f;
-    }
-
-    .btn.success{
-      background:linear-gradient(90deg,#1d8c54,#29b96d);
-    }
-
-    .btn.danger{
-      background:linear-gradient(90deg,#8c3140,#c04a61);
-    }
-
-    .btn.warn{
-      background:linear-gradient(90deg,#8e5d1d,#cc8931);
-    }
-
-    .task-list{
-      display:grid;
-      gap:12px;
-    }
-
-    .task-card{
-      background:#101b3e;
-      border:1px solid #233764;
-      border-radius:16px;
-      padding:14px;
-    }
-
-    .task-title{
-      font-size:16px;
-      font-weight:800;
-    }
-
-    .task-desc{
-      margin-top:6px;
-      line-height:1.45;
-    }
-
-    .task-meta{
-      margin-top:8px;
-      color:var(--muted);
-      font-size:12px;
-    }
-
-    .task-actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
+    button.main-btn{
       margin-top:12px;
+      padding:12px;
+      width:100%;
+      border:none;
+      border-radius:10px;
+      font-weight:800;
+      cursor:pointer;
+      background:linear-gradient(90deg,var(--blue),var(--purple));
     }
 
-    .task-actions .btn{
-      flex:1;
-      margin-top:0;
+    /* TASK CARD */
+    .task{
+      background:#0f1a3a;
+      border:1px solid #223a72;
+      padding:14px;
+      border-radius:14px;
+      margin-top:12px;
     }
 
     .chips{
       display:flex;
       flex-wrap:wrap;
-      gap:8px;
+      gap:6px;
       margin-top:10px;
     }
 
     .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
       padding:6px 10px;
-      border-radius:999px;
+      border-radius:20px;
       font-size:11px;
-      font-weight:800;
-      border:1px solid transparent;
+      font-weight:700;
+      border:1px solid;
     }
 
-    .dot{
-      width:7px;
-      height:7px;
-      border-radius:50%;
-      display:inline-block;
-    }
+    /* AGENT COLORS */
+    .chairman{color:var(--chairman);border-color:var(--chairman);box-shadow:0 0 10px var(--chairman)}
+    .cto{color:var(--cto);border-color:var(--cto);box-shadow:0 0 10px var(--cto)}
+    .cmo{color:var(--cmo);border-color:var(--cmo);box-shadow:0 0 10px var(--cmo)}
+    .hr{color:var(--hr);border-color:var(--hr);box-shadow:0 0 10px var(--hr)}
+    .builder{color:var(--builder);border-color:var(--builder);box-shadow:0 0 10px var(--builder)}
+    .automation{color:var(--automation);border-color:var(--automation);box-shadow:0 0 10px var(--automation)}
+    .qa{color:var(--qa);border-color:var(--qa);box-shadow:0 0 10px var(--qa)}
 
-    .chairman{background:rgba(217,166,40,.12); color:#ffd97a; border-color:rgba(217,166,40,.35);}
-    .chairman .dot{background:#ffd97a;}
-    .cto{background:rgba(90,124,255,.12); color:#aec1ff; border-color:rgba(90,124,255,.35);}
-    .cto .dot{background:#aec1ff;}
-    .cmo{background:rgba(255,93,177,.12); color:#ffb8de; border-color:rgba(255,93,177,.35);}
-    .cmo .dot{background:#ffb8de;}
-    .hr{background:rgba(40,215,255,.12); color:#a7f6ff; border-color:rgba(40,215,255,.35);}
-    .hr .dot{background:#a7f6ff;}
-    .builder{background:rgba(255,157,61,.12); color:#ffd5a7; border-color:rgba(255,157,61,.35);}
-    .builder .dot{background:#ffd5a7;}
-    .automation{background:rgba(40,215,122,.12); color:#b9ffd8; border-color:rgba(40,215,122,.35);}
-    .automation .dot{background:#b9ffd8;}
-    .qa{background:rgba(255,255,255,.08); color:#ffffff; border-color:rgba(255,255,255,.25);}
-    .qa .dot{background:#ffffff;}
-
+    /* RIGHT PANEL */
     .right{
-      padding:18px 18px 18px 0;
+      padding:20px;
     }
 
-    .viewer{
-      background:rgba(11,20,48,.92);
-      border:1px solid var(--line);
-      border-radius:18px;
+    .output{
+      background:var(--panel2);
+      border-radius:16px;
       padding:16px;
-      position:sticky;
-      top:18px;
-      height:calc(100vh - 36px);
+      height:100%;
       overflow:auto;
     }
 
-    .viewer h2{
-      margin:0 0 8px;
-    }
-
-    .section{
-      margin-top:12px;
-      background:#0f1627;
-      border:1px solid #22345f;
-      border-radius:14px;
-      padding:12px;
-    }
-
-    .section-title{
-      font-size:13px;
-      font-weight:800;
-      margin-bottom:8px;
-      color:#9cc1ff;
-    }
-
-    .empty{
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.55;
-    }
-
-    .agent-grid{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:12px;
-    }
-
-    .agent-card{
-      background:#101b3e;
-      border:1px solid #233764;
-      border-radius:16px;
-      padding:14px;
-    }
-
-    .file-list{
-      display:grid;
-      gap:10px;
-      margin-top:10px;
-    }
-
-    .file-card{
-      background:#101b3e;
-      border:1px solid #233764;
-      border-radius:14px;
-      padding:12px;
-    }
-
-    @media (max-width: 1200px){
-      .app{
-        grid-template-columns:240px 1fr;
-      }
-      .right{
-        grid-column:1 / -1;
-        padding:0 18px 18px 18px;
-      }
-      .viewer{
-        position:relative;
-        top:0;
-        height:auto;
-      }
-    }
-
-    @media (max-width: 900px){
-      .app{
-        grid-template-columns:1fr;
-      }
-      .sidebar{
-        height:auto;
-        position:relative;
-        width:auto;
-      }
-      .main{
-        margin-left:0;
-      }
-      .kpis{
-        grid-template-columns:1fr 1fr;
-      }
-      .agent-grid{
-        grid-template-columns:1fr;
-      }
-    }
   </style>
 </head>
+
 <body>
 
 <div class="app">
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="brand-title">ORCHEGENTRA</div>
-      <div class="brand-sub">AI COMPANY OS</div>
-    </div>
 
-    showPage('home', this)">Home</button>
-      <button class="command" onclick="showPage('command', this)">Command Center</button>
-      <button class="agents" onclick="showPage('agents', this)">Agents</button>
-      <button class="workspace" onclick="showPage('workspace', this)">Workspace</button>
-      <button class="ongoing" onclick="showPage('ongoing', this)">Ongoing</button>
-      <button class="completed" onclick="showPage('completed', this)">Completed</button>
-      <button class="output" onclick="showPage('output', this)">Output</button>
-      <button class="files" onclick="showPage('files', this)">Files</button>
-      <button class="settings" onclick="showPage('settings', this)">Settings</button>
-    </div>
-  </aside>
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo">ORCHEGENTRA</div>
 
-  <main class="main">
-    <div class="topbar">
-      <div>
-        <h1>AI Command Center</h1>
-        <p>Organized SaaS shell for tasks, workspace, outputs, files, and agents</p>
-      </div>
-    </div>
+  <div class="nav">
+    <button class="active" onclick="showPage('home',this)">Home</button>
+    <button onclick="showPage('command',this)">Command Center</button>
+    <button onclick="showPage('agents',this)">Agents</button>
+    <button onclick="showPage('workspace',this)">Workspace</button>
+    <button onclick="showPage('ongoing',this)">Ongoing</button>
+    <button onclick="showPage('completed',this)">Completed</button>
+    <button onclick="showPage('output',this)">Output</button>
+  </div>
+</div>
 
-    <section id="page-home" class="page active">
-      <div class="panel">
-        <h2>Home</h2>
-        <div class="kpis">
-          <div class="kpi">
-            <div class="label">Total Tasks</div>
-            <div class="value" id="kpiTotal">0</div>
-          </div>
-          <div class="kpi">
-            <div class="label">Ongoing</div>
-            <div class="value" id="kpiOngoing">0</div>
-          </div>
-          <div class="kpi">
-            <div class="label">Completed</div>
-            <div class="value" id="kpiCompleted">0</div>
-          </div>
-          <div class="kpi">
-            <div class="label">Selected</div>
-            <div class="value" id="kpiSelected
+<!-- MAIN -->
+<div class="main">
 
-    <div class="nav">
-      <button class="home active" onclick="
+<div id="home" class="page active panel">
+  <h2>🚀 ORCHEGENTRA AI</h2>
+  <p>Next-gen Agentic AI Company OS</p>
+</div>
 
-">-</div>
-          </div>
-        </div>
-      </div>
-    </section>
+<div id="command" class="page panel">
+  <h2>Create Task</h2>
+  <input id="title" placeholder="Task title">
+  <textarea id="desc" placeholder="Task description"></textarea>
+  <input type="file" id="files" multiple>
+  <button class="main-btn" onclick="createTask()">Create Task</button>
+</div>
 
-    <section id="page-command" class="page">
-      <div class="panel">
-        <h2>Command Center</h2>
-        <div class="muted">Create a task with title, description, and attachments.</div>
-        <input id="taskTitle" class="input" placeholder="Task Title" />
-        <textarea id="taskDesc" class="textarea" placeholder="Task Description"></textarea>
-        <input id="taskFiles" class="file-input" type="file" multiple />
-        <button class="btn" onclick="createTask()">Create Task</button>
+<div id="agents" class="page panel">
+  <h2>Agents</h2>
+  <div class="chips">
+    <div class="chip chairman">Chairman</div>
+    <div class="chip cto">CTO</div>
+    <div class="chip cmo">CMO</div>
+    <div class="chip hr">HR</div>
+    <div class="chip builder">Builder</div>
+    <div class="chip automation">Automation</div>
+    <div class="chip qa">QA</div>
+  </div>
+</div>
 
-        <div id="attachmentPreview" class="file-list"></div>
-      </div>
-    </section>
+<div id="workspace" class="page panel">
+  <h2>Workspace</h2>
+  <div id="workspaceBox">Select task</div>
+</div>
 
-    <section id="page-agents" class="page">
-      <div class="panel">
-        <h2>Agents</h2>
-        <div class="agent-grid">
-          <div class="agent-card"><b>Chairman</b><div class="muted">Vision, direction, final intent</div></div>
-          <div class="agent-card"><b>CTO</b><div class="muted">Architecture and technical structure</div></div>
-          <div class="agent-card"><b>CMO</b><div class="muted">Positioning and growth strategy</div></div>
-          <div class="agent-card"><b>HR</b><div class="muted">People structure and responsibilities</div></div>
-          <div class="agent-card"><b>Builder</b><div class="muted">Turns plan into build-ready blueprint</div></div>
-          <div class="agent-card"><b>Automation</b><div class="muted">Workflow and integration design</div></div>
-          <div class="agent-card"><b>QA</b><div class="muted">Testing and validation checks</div></div>
-        </div>
-      </div>
-    </section>
+<div id="ongoing" class="page panel">
+  <h2>Ongoing Tasks</h2>
+  <div id="ongoingList"></div>
+</div>
 
-    <section id="page-workspace" class="page">
-      <div class="panel">
-        <h2>Workspace</h2>
-        <div id="workspaceBox" class="empty">Select an ongoing task from Ongoing tab.</div>
-      </div>
-    </section>
+<div id="completed" class="page panel">
+  <h2>Completed Tasks</h2>
+  <button onclick="clearCompleted()">Clear Completed</button>
+  <div id="completedList"></div>
+</div>
 
-    <section id="page-ongoing" class="page">
-      <div class="panel">
-        <h2>Ongoing Tasks</h2>
-        <div id="ongoingList
+<div id="output" class="page panel">
+  <h2>Output</h2>
+  <div id="outputBox">No output yet</div>
+</div>
 
-"></div>
-      </div>
-    </section>
+</div>
 
-    <section id="page-completed" class="page">
-      <div class="panel">
-        <h2>Completed Tasks</h2>
-        <button class="btn danger" onclick="clearCompleted()">Clear Completed</button>
-        <div id="completedList"></div>
-      </div>
-    </section>
+<!-- RIGHT OUTPUT PANEL -->
+<div class="right">
+  <div class="output" id="liveOutput">
+    <h3>Live Agent Output</h3>
+    Waiting...
+  </div>
+</div>
 
-    <section id="page-output" class="page">
-      <div class="panel">
-        <h2>Output</h2>
-        <div class="empty">Select a task to view output</div>
-      </div>
-    </section>
-
-    <section id="page-files" class="page">
-      <div class="panel">
-        <h2>Files</h2>
-        <div id="filesBox" class="empty">No files uploaded</div>
-      </div>
-    </section>
-
-    <section id="page-settings" class="page">
-      <div class="panel">
-        <h2>Settings</h2>
-        <div class="muted">Frontend phase completed. Backend comes next.</div>
-      </div>
-    </section>
-
-  </main>
-
-  <aside class="right">
-    <div class="viewer" id="viewer">
-      <div class="empty">Task output will appear here</div>
-    </div>
-  </aside>
 </div>
 
 <script>
 
-let ongoingTasks = [];
-let completedTasks = [];
-let selectedTaskId = null;
-let stagedFiles = [];
+let tasks=[]
+let selected=null
 
-// Navigation
-function showPage(page, btn){
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById("page-" + page).classList.add("active");
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+  document.getElementById(id).classList.add('active')
 
-  document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
-  if(btn) btn.classList.add("active");
-
-  if(page === "workspace") renderWorkspace();
-  if(page === "ongoing") renderOngoing();
-  if(page === "completed") renderCompleted();
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'))
+  btn.classList.add('active')
 }
 
-// File picker
-document.addEventListener("change", function(e){
-  if(e.target && e.target.id === "taskFiles"){
-    stagedFiles = Array.from(e.target.files);
-    renderFiles();
-  }
-});
-
-// Create task
 function createTask(){
-  let title = document.getElementById("taskTitle").value.trim();
-  let desc = document.getElementById("taskDesc").value.trim();
+  const title=document.getElementById('title').value
+  const desc=document.getElementById('desc').value
 
-  if(!title || !desc){
-    alert("Enter details");
-    return;
-  }
-
-  let task = {
-    id: Date.now(),
+  const task={
+    id:Date.now(),
     title,
     desc,
-    files: stagedFiles,
-    output: {
-      builder: "Builder will generate app structure",
-      automation: "Automation workflows will be designed",
-      qa: "QA testing checklist will be created"
-    }
-  };
-
-  ongoingTasks.unshift(task);
-  selectedTaskId = task.id;
-
-  document.getElementById("taskTitle").value = "";
-  document.getElementById("taskDesc").value = "";
-  stagedFiles = [];
-
-  renderOngoing();
-  renderWorkspace();
-  renderFiles();
-  updateKPIs();
-}
-
-// Render ongoing
-function renderOngoing(){
-  let box = document.getElementById("ongoingList");
-
-  if(!ongoingTasks.length){
-    box.innerHTML = "No ongoing tasks";
-    return;
+    status:'ongoing'
   }
 
-  box.innerHTML = ongoingTasks.map(t => `
-    <div class="task-card">
-      <b>${t.title}</b><br>${t.desc}
-      <div class="task-actions">
-        <button onclick="openWorkspace(${t.id})">Open</button>
-        <button onclick="completeTask(${t.id})">Complete</button>
-        <button onclick="deleteTask(${t.id})">Delete</button>
+  tasks.push(task)
+  renderTasks()
+}
+
+function renderTasks(){
+  const ongoing=document.getElementById('ongoingList')
+  const completed=document.getElementById('completedList')
+
+  ongoing.innerHTML=''
+  completed.innerHTML=''
+
+  tasks.forEach(t=>{
+    const el=document.createElement('div')
+    el.className='task'
+
+    el.innerHTML=`
+      <b>${t.title}</b>
+      <p>${t.desc}</p>
+
+      <div class="chips">
+        <div class="chip chairman">Chairman</div>
+        <div class="chip cto">CTO</div>
+        <div class="chip builder">Builder</div>
+        <div class="chip automation">Automation</div>
+        <div class="chip qa">QA</div>
       </div>
-    </div>
-  `).join("");
+
+      <button onclick="selectTask(${t.id})">Open</button>
+      <button onclick="completeTask(${t.id})">Complete</button>
+      <button onclick="deleteTask(${t.id})">Delete</button>
+    `
+
+    if(t.status==='ongoing') ongoing.appendChild(el)
+    else completed.appendChild(el)
+  })
 }
 
-// Workspace
-function openWorkspace(id){
-  selectedTaskId = id;
-  renderWorkspace();
-  showTaskOutput(id);
-  showPage("workspace");
+function selectTask(id){
+  selected=tasks.find(t=>t.id===id)
+  document.getElementById('workspaceBox').innerText=selected.title
+
+  // fake agent output
+  document.getElementById('liveOutput').innerText=
+`Chairman → Strategy defined
+CTO → Architecture planned
+Builder → System design ready
+Automation → Flow created
+QA → Testing passed`
 }
 
-function renderWorkspace(){
-  let box = document.getElementById("workspaceBox");
-  let t = ongoingTasks.find(x=>x.id==selectedTaskId);
-
-  if(!t){
-    box.innerHTML = "No task selected";
-    return;
-  }
-
-  box.innerHTML = `<b>${t.title}</b><br>${t.desc}`;
-}
-
-// Complete
 function completeTask(id){
-  let t = ongoingTasks.find(x=>x.id==id);
-  completedTasks.unshift(t);
-  ongoingTasks = ongoingTasks.filter(x=>x.id!=id);
-
-  renderOngoing();
-  renderCompleted();
-  updateKPIs();
+  const t=tasks.find(x=>x.id===id)
+  t.status='completed'
+  renderTasks()
 }
 
-// Delete
 function deleteTask(id){
-  ongoingTasks = ongoingTasks.filter(x=>x.id!=id);
-  renderOngoing();
-  renderWorkspace();
-  updateKPIs();
+  tasks=tasks.filter(t=>t.id!==id)
+  renderTasks()
 }
 
-// Completed
-function renderCompleted(){
-  let box = document.getElementById("completedList");
-
-  if(!completedTasks.length){
-    box.innerHTML = "No completed tasks";
-    return;
-  }
-
-  box.innerHTML = completedTasks.map(t => `
-    <div class="task-card">
-      ${t.title}
-      <button onclick="showTaskOutput(${t.id})">View</button>
-    </div>
-  `).join("");
-}
-
-// Clear completed
 function clearCompleted(){
-  completedTasks = [];
-  renderCompleted();
-  updateKPIs();
-}
-
-// Output
-function showTaskOutput(id){
-  let t = ongoingTasks.find(x=>x.id==id) || completedTasks.find(x=>x.id==id);
-  if(!t) return;
-
-  document.getElementById("viewer").innerHTML = `
-    <h2>${t.title}</h2>
-    <div class="section"><b>Builder:</b> ${t.output.builder}</div>
-    <div class="section"><b>Automation:</b> ${t.output.automation}</div>
-    <div class="section"><b>QA:</b> ${t.output.qa}</div>
-  `;
-}
-
-// Files
-function renderFiles(){
-  let box = document.getElementById("filesBox");
-
-  if(!stagedFiles.length){
-    box.innerHTML = "No files";
-    return;
-  }
-
-  box.innerHTML = stagedFiles.map(f => `<div>${f.name}</div>`).join("");
-}
-
-// KPIs
-function updateKPIs(){
-  document.getElementById("kpiTotal").innerText = ongoingTasks.length + completedTasks.length;
-  document.getElementById("kpiOngoing").innerText = ongoingTasks.length;
-  document.getElementById("kpiCompleted").innerText = completedTasks.length;
+  tasks=tasks.filter(t=>t.status!=='completed')
+  renderTasks()
 }
 
 </script>
 
 </body>
 </html>
-
-        
