@@ -42,148 +42,265 @@
 
     *{box-sizing:border-box}
     html,body{margin:0;min-height:100%}
+
     body{
       font-family:Arial,sans-serif;
       color:var(--text);
       background:
         radial-gradient(circle at 12% 10%, rgba(40,215,255,.11), transparent 18%),
-        radial-gradient(circle at 83% 10%, rgba(143,92,255
-
-                                                radial-gradient(circle at 83% 10%, rgba(143,92,255,.12), transparent 20%),
+        radial-gradient(circle at 83% 10%, rgba(143,92,255,.12), transparent 20%),
         radial-gradient(circle at 50% 90%, rgba(40,215,122,.10), transparent 25%),
         linear-gradient(180deg,var(--bg),var(--bg2));
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.16;
+      background-image:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size:28px 28px;
     }
 
     .app{
       display:grid;
-      grid-template-columns:260px 1fr 360px;
+      grid-template-columns:270px 1fr 430px;
       min-height:100vh;
     }
 
-    /* SIDEBAR */
     .sidebar{
       background:rgba(6,10,22,.95);
       border-right:1px solid var(--line);
       padding:18px;
+      position:sticky;
+      top:0;
+      height:100vh;
     }
 
-    .logo{
-      font-size:26px;
+    .brand{
+      background:linear-gradient(135deg, rgba(90,124,255,.18), rgba(40,215,255,.08), rgba(143,92,255,.12));
+      border:1px solid var(--line2);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:0 0 28px rgba(90,124,255,.13);
+    }
+
+    .brand-title{
+      font-size:28px;
       font-weight:900;
-      letter-spacing:1px;
-      margin-bottom:20px;
-      color:var(--cyan);
-      text-shadow:0 0 18px rgba(40,215,255,.6);
+      letter-spacing:.6px;
+    }
+
+    .brand-sub{
+      margin-top:6px;
+      font-size:11px;
+      letter-spacing:2.5px;
+      color:var(--muted);
+    }
+
+    .nav{
+      margin-top:18px;
+      display:grid;
+      gap:10px;
     }
 
     .nav button{
       width:100%;
-      padding:12px;
-      margin-top:10px;
+      padding:13px 14px;
       border:none;
-      border-radius:12px;
+      border-radius:14px;
       background:#0f1a3a;
       color:white;
       cursor:pointer;
       border:1px solid #223a72;
-      font-weight:700;
+      font-weight:800;
+      text-align:left;
       transition:.2s;
     }
 
     .nav button:hover{
-      transform:translateY(-2px);
-      box-shadow:0 0 20px rgba(90,124,255,.3);
+      transform:translateY(-1px);
+      box-shadow:0 0 20px rgba(90,124,255,.18);
     }
 
     .nav button.active{
-      background:linear-gradient(90deg,var(--blue),var(--purple));
-      box-shadow:0 0 25px rgba(90,124,255,.6);
+      border-color:#5473ca;
+      box-shadow:0 0 24px rgba(90,124,255,.35);
     }
 
-    /* MAIN */
+    .nav button.home.active{ background:linear-gradient(90deg, rgba(40,215,255,.22), rgba(40,215,255,.05)); }
+    .nav button.command.active{ background:linear-gradient(90deg, rgba(90,124,255,.24), rgba(90,124,255,.05)); }
+    .nav button.agents.active{ background:linear-gradient(90deg, rgba(143,92,255,.24), rgba(143,92,255,.05)); }
+    .nav button.workspace.active{ background:linear-gradient(90deg, rgba(40,215,122,.22), rgba(40,215,122,.05)); }
+    .nav button.ongoing.active{ background:linear-gradient(90deg, rgba(255,157,61,.22), rgba(255,157,61,.05)); }
+    .nav button.completed.active{ background:linear-gradient(90deg, rgba(255,93,177,.22), rgba(255,93,177,.05)); }
+    .nav button.output.active{ background:linear-gradient(90deg, rgba(217,166,40,.22), rgba(217,166,40,.05)); }
+    .nav button.files.active{ background:linear-gradient(90deg, rgba(114,233,255,.22), rgba(114,233,255,.05)); }
+    .nav button.settings.active{ background:linear-gradient(90deg, rgba(255,255,255,.14), rgba(255,255,255,.03)); }
+
+    .side-box{
+      margin-top:18px;
+      padding:14px;
+      border-radius:16px;
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.6;
+    }
+
     .main{
-      padding:20px;
+      padding:18px;
     }
 
-    .page{display:none}
-    .page.active{display:block}
+    .topbar{
+      background:rgba(10,18,38,.88);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:16px
+
+    display:flex;
+      justify-content:space-between;
+      gap:14px;
+      align-items:center;
+      box-shadow:var(--shadow);
+    }
+
+    .topbar h1{
+      margin:0;
+      font-size:24px;
+    }
+
+    .topbar p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .topbar-tags{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .tag{
+      padding:8px 11px;
+      border-radius:999px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--line);
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .page{
+      display:none;
+      margin-top:16px;
+    }
+
+    .page.active{
+      display:block;
+    }
 
     .panel{
       background:var(--panel);
       border:1px solid var(--line);
-      border-radius:16px;
+      border-radius:20px;
       padding:16px;
       margin-bottom:16px;
       box-shadow:var(--shadow);
     }
 
-    /* INPUT */
-    input,textarea{
+    .hero{
+      background:linear-gradient(135deg, rgba(90,124,255,.16), rgba(40,215,255,.08), rgba(143,92,255,.08));
+      border:1px solid var(--line2);
+    }
+
+    .panel h2{
+      margin:0 0 10px;
+      font-size:22px;
+    }
+
+    .muted{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+    }
+
+    .kpis{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+    }
+
+    .kpi{
+      background:var(--panel2);
+      border:1px solid #233764;
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .kpi .value{
+      margin-top:8px;
+      font-size:30px;
+      font-weight:900;
+    }
+
+    .input,.textarea,.btn,.file-input{
       width:100%;
-      padding:12px;
-      border-radius:10px;
-      border:1px solid #2a3f77;
-      background:#0c152f;
-      color:white;
+      padding:13px;
+      border-radius:12px;
+      border:none;
       margin-top:10px;
     }
 
-    button.main-btn{
-      margin-top:12px;
-      padding:12px;
-      width:100%;
-      border:none;
-      border-radius:10px;
-      font-weight:800;
+    .input,.textarea,.file-input{
+      background:#0c152f;
+      color:var(--text);
+      border:1px solid #2a3f77;
+    }
+
+    .textarea{
+      min-height:120px;
+    }
+
+    .btn{
       cursor:pointer;
+      color:white;
+      font-weight:800;
       background:linear-gradient(90deg,var(--blue),var(--purple));
     }
 
-    /* TASK CARD */
-    .task{
+    .task-card{
       background:#0f1a3a;
       border:1px solid #223a72;
       padding:14px;
-      border-radius:14px;
+      border-radius:16px;
       margin-top:12px;
     }
 
     .chips{
       display:flex;
-      flex-wrap:wrap;
       gap:6px;
-      margin-top:10px;
+      flex-wrap:wrap;
+      margin-top:8px;
     }
 
     .chip{
-      padding:6px 10px;
-      border-radius:20px;
+      padding:5px 9px;
+      border-radius:14px;
       font-size:11px;
-      font-weight:700;
       border:1px solid;
     }
 
-    /* AGENT COLORS */
-    .chairman{color:var(--chairman);border-color:var(--chairman);box-shadow:0 0 10px var(--chairman)}
-    .cto{color:var(--cto);border-color:var(--cto);box-shadow:0 0 10px var(--cto)}
-    .cmo{color:var(--cmo);border-color:var(--cmo);box-shadow:0 0 10px var(--cmo)}
-    .hr{color:var(--hr);border-color:var(--hr);box-shadow:0 0 10px var(--hr)}
-    .builder{color:var(--builder);border-color:var(--builder);box-shadow:0 0 10px var(--builder)}
-    .automation{color:var(--automation);border-color:var(--automation);box-shadow:0 0 10px var(--automation)}
-    .qa{color:var(--qa);border-color:var(--qa);box-shadow:0 0 10px var(--qa)}
-
-    /* RIGHT PANEL */
-    .right{
-      padding:20px;
-    }
-
-    .output{
-      background:var(--panel2);
-      border-radius:16px;
-      padding:16px;
-      height:100%;
-      overflow:auto;
-    }
+    .chairman{color:var(--chairman);border-color:var(--chairman)}
+    .cto{color:var(--cto);border-color:var(--cto)}
+    .builder{color:var(--builder);border-color:var(--builder)}
+    .automation{color:var(--automation);border-color:var(--automation)}
+    .qa{color:var(--qa);border-color:var(--qa)}
 
   </style>
 </head>
@@ -192,105 +309,79 @@
 
 <div class="app">
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <div class="logo">ORCHEGENTRA</div>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="brand">
+      <div class="brand-title">ORCHEGENTRA</div>
+      <div class="brand-sub">AI OS</div>
+    </div>
 
-  <div class="nav">
-    <button class="active" onclick="showPage('home',this)">Home</button>
-    <button onclick="showPage('command',this)">Command Center</button>
-    <button onclick="showPage('agents',this)">Agents</button>
-    <button onclick="showPage('workspace',this)">Workspace</button>
-    <button onclick="showPage('ongoing',this)">Ongoing</button>
-    <button onclick="showPage('completed',this)">Completed</button>
-    <button onclick="showPage('output',this)">Output</button>
+    <div class="nav">
+      <button onclick="showPage('home')">Home</button>
+      <button onclick="showPage('command')">Command</button>
+      <button onclick="showPage('agents')">Agents</button>
+      <button onclick="showPage('workspace')">Workspace</button>
+      <button onclick="showPage('ongoing')">Ongoing</button>
+      <button onclick="showPage('completed')">Completed</button>
+      <button onclick="showPage('output')">Output</button>
+      <button onclick="showPage('files')">Files</button>
+      <button onclick="showPage('settings')">Settings</button>
+    </div>
   </div>
-</div>
 
-<!-- MAIN -->
-<div class="main">
+  <!-- MAIN -->
+  <div class="main">
 
-<div id="home" class="page active panel">
-  <h2>🚀 ORCHEGENTRA AI</h2>
-  <p>Next-gen Agentic AI Company OS</p>
-</div>
+    <div class="topbar">
+      <h1>AI Command Center</h1>
+    </div>
 
-<div id="command" class="page panel">
-  <h2>Create Task</h2>
-  <input id="title" placeholder="Task title">
-  <textarea id="desc" placeholder="Task description"></textarea>
-  <input type="file" id="files" multiple>
-  <button class="main-btn" onclick="createTask()">Create Task</button>
-</div>
+    <!-- HOME -->
+    <div id="home" class="page active panel">
+      <h2>Home</h2>
+      <p class="muted">Welcome to ORCHEGENTRA AI</p>
+    </div>
 
-<div id="agents" class="page panel">
-  <h2>Agents</h2>
-  <div class="chips">
-    <div class="chip chairman">Chairman</div>
-    <div class="chip cto">CTO</div>
-    <div class="chip cmo">CMO</div>
-    <div class="chip hr">HR</div>
-    <div class="chip builder">Builder</div>
-    <div class="chip automation">Automation</div>
-    <div class="chip qa">QA</div>
+    <!-- COMMAND -->
+    <div id="command" class="page panel">
+      <h2>Create Task</h2>
+      <input id="title" class="input" placeholder="Title">
+      <textarea id="desc" class="textarea" placeholder="Description"></textarea>
+      <button class="btn" onclick="createTask()">Create</button>
+    </div>
+
+    <!-- ONGOING -->
+    <div id="ongoing" class="page panel">
+      <h2>Ongoing Tasks</h2>
+      <div id="taskList"></div>
+    </div>
+
+    <!-- OUTPUT -->
+    <div id="output" class="page panel">
+      <h2>Output</h2>
+      <div id="outputBox">No output yet</div>
+    </div>
+
   </div>
-</div>
-
-<div id="workspace" class="page panel">
-  <h2>Workspace</h2>
-  <div id="workspaceBox">Select task</div>
-</div>
-
-<div id="ongoing" class="page panel">
-  <h2>Ongoing Tasks</h2>
-  <div id="ongoingList"></div>
-</div>
-
-<div id="completed" class="page panel">
-  <h2>Completed Tasks</h2>
-  <button onclick="clearCompleted()">Clear Completed</button>
-  <div id="completedList"></div>
-</div>
-
-<div id="output" class="page panel">
-  <h2>Output</h2>
-  <div id="outputBox">No output yet</div>
-</div>
-
-</div>
-
-<!-- RIGHT OUTPUT PANEL -->
-<div class="right">
-  <div class="output" id="liveOutput">
-    <h3>Live Agent Output</h3>
-    Waiting...
-  </div>
-</div>
-
 </div>
 
 <script>
 
-let tasks=[]
-let selected=null
+let tasks = []
 
-function showPage(id,btn){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
-  document.getElementById(id).classList.add('active')
-
-  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'))
-  btn.classList.add('active')
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
+  document.getElementById(id).classList.add("active")
 }
 
 function createTask(){
-  const title=document.getElementById('title').value
-  const desc=document.getElementById('desc').value
+  const title = document.getElementById("title").value
+  const desc = document.getElementById("desc").value
 
-  const task={
-    id:Date.now(),
+  const task = {
+    id: Date.now(),
     title,
-    desc,
-    status:'ongoing'
+    desc
   }
 
   tasks.push(task)
@@ -298,65 +389,26 @@ function createTask(){
 }
 
 function renderTasks(){
-  const ongoing=document.getElementById('ongoingList')
-  const completed=document.getElementById('completedList')
-
-  ongoing.innerHTML=''
-  completed.innerHTML=''
-
-  tasks.forEach(t=>{
-    const el=document.createElement('div')
-    el.className='task'
-
-    el.innerHTML=`
+  const list = document.getElementById("taskList")
+  list.innerHTML = tasks.map(t=>`
+    <div class="task-card">
       <b>${t.title}</b>
       <p>${t.desc}</p>
-
       <div class="chips">
-        <div class="chip chairman">Chairman</div>
-        <div class="chip cto">CTO</div>
-        <div class="chip builder">Builder</div>
-        <div class="chip automation">Automation</div>
-        <div class="chip qa">QA</div>
+        <span class="chip chairman">Chairman</span>
+        <span class="chip cto">CTO</span>
+        <span class="chip builder">Builder</span>
+        <span class="chip automation">Automation</span>
+        <span class="chip qa">QA</span>
       </div>
-
-      <button onclick="selectTask(${t.id})">Open</button>
-      <button onclick="completeTask(${t.id})">Complete</button>
-      <button onclick="deleteTask(${t.id})">Delete</button>
-    `
-
-    if(t.status==='ongoing') ongoing.appendChild(el)
-    else completed.appendChild(el)
-  })
+      <button onclick="runTask(${t.id})">Run</button>
+    </div>
+  `).join("")
 }
 
-function selectTask(id){
-  selected=tasks.find(t=>t.id===id)
-  document.getElementById('workspaceBox').innerText=selected.title
-
-  // fake agent output
-  document.getElementById('liveOutput').innerText=
-`Chairman → Strategy defined
-CTO → Architecture planned
-Builder → System design ready
-Automation → Flow created
-QA → Testing passed`
-}
-
-function completeTask(id){
-  const t=tasks.find(x=>x.id===id)
-  t.status='completed'
-  renderTasks()
-}
-
-function deleteTask(id){
-  tasks=tasks.filter(t=>t.id!==id)
-  renderTasks()
-}
-
-function clearCompleted(){
-  tasks=tasks.filter(t=>t.status!=='completed')
-  renderTasks()
+function runTask(id){
+  document.getElementById("outputBox").innerText =
+    "Multi-agent execution completed for task " + id
 }
 
 </script>
