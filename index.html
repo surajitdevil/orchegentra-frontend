@@ -1644,14 +1644,28 @@ function formatOutput(text) {
   showToast('Sending to Orchegentra AI...');
 
   try {
-    const res = await fetch('https://adventurous-art-production.up.railway.app/api/task/execute', {
-                      
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description: desc })
-    });
+    const createRes = await 
+    fetch('https://adventurous
+    -art-production.up.railway
+    .app/api/tasks/create', {
 
-    const data = await res.json();
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ title, description: desc })
+});
+
+const createData = await createRes.json();
+if (!createData.ok) throw new Error(createData.error || 'Task creation failed');
+
+const taskId = createData.task.id;
+const res = await fetch(`https://adventurous-art-production.up.railway.app/api/tasks/${taskId}/execute`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' }
+});
+
+const data = await res.json();
+if (!data.ok) throw new Error(data.error || 'Task execution failed');
+    
 
     window.lastOutput = data;
 
