@@ -1565,6 +1565,8 @@
   };
 
   let toastTimer = null;
+  let activeAgent = "chairman";
+let activeTaskId = null;
 
   function navigate(page, btn) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
