@@ -1683,6 +1683,7 @@ function formatOutput(text) {
     if (!createData.ok) throw new Error(createData.error || 'Task creation failed');
 
     const taskId = createData.task.id;
+    activeTaskId = taskId;
 
     const res = await fetch(`https://adventurous-art-production.up.railway.app/api/tasks/${taskId}/execute`, {
       method: 'POST',
@@ -1989,42 +1990,87 @@ function selectAgent(agent, el) {
 }
 
 async function sendMessage() {
-  const msgEl = document.getElementById("agent-message");
+  const msgEl = document.getElementById('agent-message');
+  const liveFeed = document.getElementById('live-feed');
+
   if (!msgEl) return;
 
   const msg = msgEl.value.trim();
   if (!msg) {
-    showToast("Message is empty");
+    showToast('Message is empty');
     return;
   }
 
-  addLiveFeedEntry(`You → ${activeAgent}: ${escHtml(msg)}`, "purple");
-  msgEl.value = "";
+  const labels = {
+    chairman: 'Chairman AI',
+    cto: 'CTO Agent',
+    cmo: 'CMO Agent',
+    hr: 'HR Agent',
+    data_scientist: 'Data Scientist',
+    data_engineer: 'Dev Engineer',
+    ml_engineer: 'ML Agent',
+    builder: 'Builder Agent',
+    automation: 'Automation Agent',
+    qa: 'QA Agent',
+    operations: 'Operations Agent',
+    security: 'Security Agent'
+  };
+
+  const colors = {
+    chairman: 'var(--chairman)',
+    cto: 'var(--cto)',
+    cmo: 'var(--cmo)',
+    hr: 'var(--hr)',
+    data_scientist: 'var(--ds)',
+    data_engineer: 'var(--de)',
+    ml_engineer: 'var(--ml)',
+    builder: 'var(--builder)',
+    automation: 'var(--automation)',
+    qa: 'var(--qa)',
+    operations: 'var(--operations)',
+    security: 'var(--security)'
+  };
+
+  const agentName = labels[activeAgent] || activeAgent;
+  const agentColor = colors[activeAgent] || 'var(--cyan)';
+
+  if (liveFeed) {
+    liveFeed.innerHTML += `<br><span style="color:var(--cyan)">●</span> You → ${agentName}: ${escHtml(msg)}`;
+  }
+
+  msgEl.value = '';
+  showToast(`Message sent to ${agentName}`);
 
   try {
-    const res = await fetch("https://adventurous-art-production.up.railway.app/api/agent/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+    const res = await fetch('https://adventurous-art-production.up.railway.app/api/agent-chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         agent: activeAgent,
-        message: msg
+        message: msg,
+        taskId: activeTaskId
       })
     });
 
     const data = await res.json();
 
     if (!data.ok) {
-      throw new Error(data.error || "Agent chat failed");
+      throw new Error(data.error || 'Agent reply failed');
     }
 
-    addLiveFeedEntry(`${data.agent} → ${escHtml(data.reply)}`, "green");
-    showToast("Message sent");
+    const reply = data.reply || 'No reply received.';
+
+    if (liveFeed) {
+      liveFeed.innerHTML += `<br><span style="color:${agentColor}">●</span> ${agentName}: ${escHtml(reply)}`;
+      liveFeed.scrollTop = liveFeed.scrollHeight;
+    }
   } catch (err) {
+    if (liveFeed) {
+      liveFeed.innerHTML += `<br><span style="color:var(--red)">●</span> ${agentName}: Backend chat error`;
+      liveFeed.scrollTop = liveFeed.scrollHeight;
+    }
     console.error(err);
-    addLiveFeedEntry(`System → ${escHtml(err.message)}`, "red");
-    showToast("Agent chat failed");
+    showToast('Agent chat failed');
   }
 }
 
@@ -2054,6 +2100,42 @@ async function sendMessage() {
     const modal = document.getElementById('modal-overlay');
     if (modal) modal.classList.remove('open');
   }
+  function selectAgent(agentKey, el) {
+  activeAgent = agentKey;
+
+  document.querySelectorAll('.agent-card').forEach(card => {
+    card.classList.remove('selected-agent');
+  });
+
+  if (el) el.classList.add('selected-agent');
+
+  const viewerTitle = document.getElementById('viewer-title');
+  const viewerSub = document.getElementById('viewer-sub');
+  const msgBox = document.getElementById('agent-message');
+
+  const labels = {
+    chairman: 'Chairman AI',
+    cto: 'CTO Agent',
+    cmo: 'CMO Agent',
+    hr: 'HR Agent',
+    data_scientist: 'Data Scientist',
+    data_engineer: 'Dev Engineer',
+    ml_engineer: 'ML Agent',
+    builder: 'Builder Agent',
+    automation: 'Automation Agent',
+    qa: 'QA Agent',
+    operations: 'Operations Agent',
+    security: 'Security Agent'
+  };
+
+  const name = labels[agentKey] || agentKey;
+
+  if (viewerTitle) viewerTitle.textContent = `💬 ${name}`;
+  if (viewerSub) viewerSub.textContent = `Chatting with ${name}. Messages and replies will appear in the live feed.`;
+  if (msgBox) msgBox.placeholder = `Send a message to ${name}...`;
+
+  showToast(`${name} selected`);
+}
 function openOutputModal(btn) {
   const modal = document.getElementById('modal-overlay');
   const title = document.getElementById('modal-title');
