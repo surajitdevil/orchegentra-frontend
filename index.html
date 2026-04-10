@@ -480,9 +480,10 @@
     }
 
     .agent-card:hover{border-color:#3a5aaa;transform:translateY(-2px);}
-.selected-agent{
-  border:1px solid var(--cyan) !important;
-  box-shadow:0 0 15px rgba(40,215,255,.4);
+.agent-card.selected-agent {
+  border: 2px solid var(--cyan);
+  box-shadow: 0 0 20px var(--cyan);
+  transform: scale(1.02);
 }
     .agent-card::after{
       content:"";
@@ -1555,6 +1556,7 @@
 </div>
 
 <script>
+  const API_BASE = "https://adventurous-art-production.up.railway.app";
   const titles = {
     home: ['🏠 Dashboard', 'Overview of your AI orchestration system'],
     command: ['⚡ Command Center', 'Dispatch tasks to your AI agents'],
@@ -1586,7 +1588,18 @@ let activeTaskId = null;
     if (titleEl) titleEl.textContent = entry[0];
     if (descEl) descEl.textContent = entry[1];
   }
+function selectAgent(agentKey, el) {
+  activeAgent = agentKey;
 
+  document.querySelectorAll('.agent-card').forEach(card => {
+    card.classList.remove('selected-agent');
+  });
+
+  if (el) el.classList.add('selected-agent');
+
+  showToast(agentKey + " selected");
+}
+  
   function updateClock() {
     const clock = document.getElementById('clock');
     if (!clock) return;
@@ -1637,7 +1650,7 @@ function formatOutput(text) {
     </div>
   `;
 }
-  async function dispatchTask() {
+async function dispatchTask() {
   const title = document.getElementById('task-title')?.value.trim();
   const desc = document.getElementById('task-desc')?.value.trim();
 
@@ -1646,95 +1659,48 @@ function formatOutput(text) {
     return;
   }
 
-  const ongoing = document.getElementById('ongoing-list');
-  const completedList = document.querySelector('#page-completed .task-list');
-
-  let ongoingCard = null;
-
-  if (ongoing) {
-    ongoingCard = document.createElement('div');
-    ongoingCard.className = 'task-card';
-    ongoingCard.style.cssText = '--accent:var(--orange); animation:fadeIn .3s ease;';
-    ongoingCard.innerHTML = `
-      <div class="task-title">${escHtml(title)}</div>
-      <div class="task-desc">${escHtml(desc || 'No description provided.')}</div>
-      <div class="task-meta">
-        <span>Running</span>
-        <span>Started just now</span>
-      </div>
-      <div class="task-actions">
-        <button class="btn sm warn" disabled>⏳ Processing</button>
-      </div>
-    `;
-    ongoing.prepend(ongoingCard);
-  }
-
-  clearForm();
-  showToast('Sending to Orchegentra AI...');
+  addLiveFeedEntry(`🟡 Task Created: ${title}`, "orange");
 
   try {
-    const createRes = await fetch('https://adventurous-art-production.up.railway.app/api/tasks/create', {
+    const createRes = await fetch(`${API_BASE}/api/tasks/create`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, description: desc })
     });
 
     const createData = await createRes.json();
-    if (!createData.ok) throw new Error(createData.error || 'Task creation failed');
+
+    if (!createData.ok) {
+      throw new Error(createData.error || "Task creation failed");
+    }
 
     const taskId = createData.task.id;
     activeTaskId = taskId;
 
-    const res = await fetch(`https://adventurous-art-production.up.railway.app/api/tasks/${taskId}/execute`, {
+    addLiveFeedEntry(`🔵 CTO analyzing task...`, "cyan");
+
+    const execRes = await fetch(`${API_BASE}/api/tasks/${taskId}/execute`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     });
 
-    const data = await res.json();
-    if (!data.ok) throw new Error(data.error || 'Task execution failed');
+    const data = await execRes.json();
+
+    if (!data.ok) {
+      throw new Error(data.error || "Execution failed");
+    }
+
+    addLiveFeedEntry(`🟢 Task Completed: ${title}`, "green");
 
     window.lastOutput = data;
 
-    if (ongoingCard) ongoingCard.remove();
-
-    if (completedList) {
-      const completedCard = document.createElement('div');
-      completedCard.className = 'task-card';
-      completedCard.style.cssText = '--accent:var(--green); animation:fadeIn .3s ease; opacity:.95;';
-      completedCard.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:flex-start">
-          <div class="task-title">${escHtml(title)}</div>
-          <span class="badge done">Done</span>
-        </div>
-        <div class="task-desc">${escHtml(desc || 'No description provided.')}</div>
-        <div class="task-meta">
-          <span>Completed just now</span>
-        </div>
-        <div class="task-actions">
-          <button class="btn sm cyan" onclick="openOutputModal(this)">👁 View Output</button>
-        </div>
-      `;
-      completedList.prepend(completedCard);
-    }
-
-    showToast('Task executed successfully');
   } catch (err) {
     console.error(err);
-
-    if (ongoingCard) {
-      ongoingCard.querySelector('.task-meta').innerHTML = `
-        <span>Failed</span>
-        <span>Backend error</span>
-      `;
-      ongoingCard.querySelector('.task-actions').innerHTML = `
-        <button class="btn sm danger">Failed</button>
-      `;
-    }
-
-    showToast('Backend error');
+    addLiveFeedEntry(`🔴 Backend Error: ${err.message}`, "red");
+    showToast("Backend error");
   }
 }
-
+  
   function clearForm() {
     const title = document.getElementById('task-title');
     const desc = document.getElementById('task-desc');
@@ -1988,8 +1954,18 @@ function selectAgent(agent, el) {
 
   showToast(agent + " selected");
 }
+function addLiveFeedEntry(text, color = "white") {
+  const feed = document.getElementById("live-feed");
+  if (!feed) return;
 
-async function sendMessage() {
+  const div = document.createElement("div");
+  div.style.color = color;
+  div.style.marginBottom = "6px";
+  div.innerHTML = text;
+
+  feed.prepend(div);
+}
+  async function sendMessage() {
   const msgEl = document.getElementById('agent-message');
   const liveFeed = document.getElementById('live-feed');
 
@@ -2016,33 +1992,14 @@ async function sendMessage() {
     security: 'Security Agent'
   };
 
-  const colors = {
-    chairman: 'var(--chairman)',
-    cto: 'var(--cto)',
-    cmo: 'var(--cmo)',
-    hr: 'var(--hr)',
-    data_scientist: 'var(--ds)',
-    data_engineer: 'var(--de)',
-    ml_engineer: 'var(--ml)',
-    builder: 'var(--builder)',
-    automation: 'var(--automation)',
-    qa: 'var(--qa)',
-    operations: 'var(--operations)',
-    security: 'var(--security)'
-  };
-
   const agentName = labels[activeAgent] || activeAgent;
-  const agentColor = colors[activeAgent] || 'var(--cyan)';
 
-  if (liveFeed) {
-    liveFeed.innerHTML += `<br><span style="color:var(--cyan)">●</span> You → ${agentName}: ${escHtml(msg)}`;
-  }
+  addLiveFeedEntry(`🟣 You → ${agentName}: ${msg}`, "violet");
 
-  msgEl.value = '';
-  showToast(`Message sent to ${agentName}`);
+  msgEl.value = "";
 
   try {
-    const res = await fetch('https://adventurous-art-production.up.railway.app/api/agent-chat', {
+    const res = await fetch(`${API_BASE}/api/agent-chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -2055,24 +2012,18 @@ async function sendMessage() {
     const data = await res.json();
 
     if (!data.ok) {
-      throw new Error(data.error || 'Agent reply failed');
+      throw new Error(data.error || "Agent failed");
     }
 
-    const reply = data.reply || 'No reply received.';
+    addLiveFeedEntry(`🟢 ${agentName}: ${data.reply}`, "lightgreen");
 
-    if (liveFeed) {
-      liveFeed.innerHTML += `<br><span style="color:${agentColor}">●</span> ${agentName}: ${escHtml(reply)}`;
-      liveFeed.scrollTop = liveFeed.scrollHeight;
-    }
   } catch (err) {
-    if (liveFeed) {
-      liveFeed.innerHTML += `<br><span style="color:var(--red)">●</span> ${agentName}: Backend chat error`;
-      liveFeed.scrollTop = liveFeed.scrollHeight;
-    }
     console.error(err);
-    showToast('Agent chat failed');
+    addLiveFeedEntry(`🔴 Error: ${err.message}`, "red");
+    showToast("Agent chat failed");
   }
 }
+
 
   function confirmReset() {
     const modal = document.getElementById('modal-overlay');
