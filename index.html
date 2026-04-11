@@ -1427,7 +1427,8 @@
 // ═══════════════════════════════════════════════
 // CONFIG
 // ═══════════════════════════════════════════════
-let API_BASE = localStorage.getItem('orchegentra_api_url') || 'https://adventurous-art-production.up.railway.app';
+let API_BASE = 'https://adventurous-art-production.up.railway.app';
+  localStorage.setItem('orchegentra_api_url', API_BASE);
 let OWNER_API_KEY = localStorage.getItem('orchegentra_owner_key') || '';
 let AUTH_TOKEN = localStorage.getItem('orchegentra_auth_token') || '';
 let CURRENT_USER = JSON.parse(localStorage.getItem('orchegentra_current_user') || 'null');
